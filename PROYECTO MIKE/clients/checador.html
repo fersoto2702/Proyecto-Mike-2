@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel Checador</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 flex justify-center items-center min-h-screen">
+    <div class="bg-white shadow-lg rounded-xl p-8 max-w-md w-full">
+        <h2 class="text-2xl font-semibold text-center mb-4">Registro de Asistencia</h2>
+        
+        <p class="text-gray-700 text-center">Verifica la asistencia de los maestros.</p>
+
+        <div class="mt-4 space-y-3">
+            <input type="text" id="nombre-maestro" placeholder="Nombre del maestro" class="p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 w-full">
+            <button class="bg-green-500 text-white p-2 rounded-md w-full hover:bg-green-600" onclick="registrarAsistencia()">Registrar Asistencia</button>
+            <button class="bg-gray-500 text-white p-2 rounded-md w-full hover:bg-gray-600" onclick="cerrarSesion()">Cerrar Sesión</button>
+        </div>
+    </div>
+
+    <script>
+        function registrarAsistencia() {
+            const nombre = document.getElementById("nombre-maestro").value.trim();
+            if (nombre) {
+                alert(`Asistencia de ${nombre} registrada ✅`);
+            } else {
+                alert("Por favor, ingresa el nombre del maestro.");
+            }
+        }
+
+        function cerrarSesion() {
+            localStorage.removeItem("token");
+            window.location.href = "index.html";
+        }
+    </script>
+</body>
+</html>

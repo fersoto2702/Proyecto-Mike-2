@@ -1,0 +1,22 @@
+[
+    {
+      "id": 1,
+      "nombre": "Ingeniería en Software",
+      "duracion": "8 semestres"
+    },
+    {
+      "id": 2,
+      "nombre": "Ingenieria en Geodesia",
+      "duracion": "7 semestres"
+    },
+    {
+      "id": 3,
+      "nombre": "Ingeniería em Procesos Industriales",
+      "duracion": "8 semestres"
+    },
+    {
+      "id": 4,
+      "nombre": "Ingeniería en Sistemas",
+      "duracion": "8 semestres"
+    }
+  ]  

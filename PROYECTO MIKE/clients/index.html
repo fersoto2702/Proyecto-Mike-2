@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Acceso</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        const USUARIOS = [
+            { username: "admin", password: "1234", type: "maestro" },
+            { username: "juan", password: "abcd", type: "estudiante" },
+            { username: "maria", password: "5678", type: "maestro" },
+            { username: "admin", password: "123", type: "administrador" }   
+        ];
+
+        function handleRoleChange() {
+            const role = document.getElementById("user-type").value;
+            const loginSection = document.getElementById("login-section");
+            const checadorSection = document.getElementById("checador-section");
+            
+            loginSection.classList.add("hidden");
+            checadorSection.classList.add("hidden");
+
+            if (["administrador", "estudiante", "maestro"].includes(role)) {
+                loginSection.classList.remove("hidden");
+            } else if (role === "checador") {
+                checadorSection.classList.remove("hidden");
+            }
+        }
+
+        function handleLogin(event) {
+            event.preventDefault();
+            const role = document.getElementById("user-type").value;
+            const username = document.getElementById("username").value.trim();
+            const password = document.getElementById("password").value.trim();
+
+            const usuarioValido = USUARIOS.find(user => 
+                user.type === role &&
+                user.username === username &&
+                user.password === password
+            );
+
+            if (usuarioValido) {
+                // Redirección según tipo de usuario
+                const paginas = {
+                    administrador: "admin.html",
+                    maestro: "maestro.html",
+                    estudiante: "estudiante.html"
+                };
+                window.location.href = paginas[role];
+            } else {
+                alert("Error: Credenciales inválidas");
+                document.getElementById("password").value = "";
+            }
+        }
+
+        function handleChecador() {
+            const codigo = document.getElementById("codigo-checador").value;
+            if (codigo === "2024") {
+                window.location.href = "checador.html";
+            } else {
+                alert("Código de acceso incorrecto");
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            document.getElementById("user-type").addEventListener("change", handleRoleChange);
+            document.getElementById("login-form").addEventListener("submit", handleLogin);
+            document.getElementById("btn-checador").addEventListener("click", handleChecador);
+        });
+    </script>
+</head>
+<body class="bg-gray-100 flex justify-center items-center min-h-screen">
+    <div class="bg-white shadow-lg rounded-xl p-8 max-w-md w-full">
+        <h2 class="text-2xl font-semibold text-center mb-4">Acceso al Sistema</h2>
+        
+        <select id="user-type" class="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500">
+            <option value="">Selecciona tu rol</option>
+            <option value="estudiante">Estudiante</option>
+            <option value="maestro">Maestro</option>
+            <option value="checador">Checador</option>
+            <option value="administrador">Administrador</option>
+        </select>
+
+        <!-- Sección de Login -->
+        <div id="login-section" class="mt-4 hidden">
+            <form id="login-form" class="flex flex-col space-y-3">
+                <input type="text" id="username" placeholder="Usuario" required
+                       class="p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500">
+                <input type="password" id="password" placeholder="Contraseña" required
+                       class="p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500">
+                <button type="submit" class="bg-blue-500 text-white p-2 rounded-md hover:bg-blue-600">
+                    Ingresar
+                </button>
+            </form>
+        </div>
+
+        <!-- Sección de Checador -->
+        <div id="checador-section" class="mt-4 hidden">
+            <input type="text" id="codigo-checador" placeholder="Código de acceso (2024)" 
+                   class="p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 w-full">
+            <button id="btn-checador" class="bg-green-500 text-white p-2 rounded-md mt-2 w-full hover:bg-green-600">
+                Validar Código
+            </button>
+        </div>
+    </div>
+</body>
+</html>

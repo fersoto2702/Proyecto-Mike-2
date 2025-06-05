@@ -1,0 +1,10 @@
+[
+    {
+      "id": 1,
+      "carrera_id": 1,
+      "materia": "Programación 1",
+      "dia": "Lunes",
+      "hora_inicio": "08:00",
+      "hora_fin": "10:00"
+    }
+  ]  

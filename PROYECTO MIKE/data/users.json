@@ -1,0 +1,22 @@
+[
+  {
+    "username": "admin",
+    "password": "1234",
+    "type": "maestro"
+  },
+  {
+    "username": "juan",
+    "password": "abcd",
+    "type": "estudiante"
+  },
+  {
+    "username": "maria",
+    "password": "5678",
+    "type": "maestro"
+  },
+  {
+    "username": "admin",
+    "password": "123", 
+    "type": "administrador"
+  }
+]

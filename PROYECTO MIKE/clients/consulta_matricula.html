@@ -1,0 +1,973 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Gestión de Matrículas</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .filtros {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .filtros input, .filtros select, .filtros button {
+            padding: 8px 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .filtros button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .filtros button:hover {
+            background-color: #2980b9;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #f8f9fa;
+            color: #333;
+        }
+
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        .estado-activa {
+            color: #27ae60;
+            font-weight: bold;
+        }
+
+        .estado-baja-permanente {
+            color: #e74c3c;
+            font-weight: bold;
+        }
+
+        .estado-baja-temporal {
+            color: #f39c12;
+            font-weight: bold;
+        }
+
+       
+
+        .paginacion {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .paginacion button {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            background-color: white;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: all 0.3s;
+        }
+
+        .paginacion button.active {
+            background-color: #3498db;
+            color: white;
+            border-color: #3498db;
+        }
+
+        .paginacion button:hover:not(.active) {
+            background-color: #f1f1f1;
+        }
+
+        /* Modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            overflow-y: auto;
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 50px auto;
+            padding: 25px;
+            width: 80%;
+            max-width: 800px;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            position: relative;
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 24px;
+            cursor: pointer;
+            color: #666;
+        }
+
+        .close-modal:hover {
+            color: #333;
+        }
+
+        .detalles-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .detalles-card {
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 6px;
+            border-left: 4px solid #3498db;
+        }
+
+        .detalles-card h3 {
+            margin-top: 0;
+            color: #3498db;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 8px;
+            margin-bottom: 15px;
+        }
+
+        .detalles-item {
+            margin-bottom: 8px;
+        }
+
+        .detalles-label {
+            font-weight: bold;
+            color: #555;
+        }
+
+        .btn-cerrar {
+            background-color: #95a5a6;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.3s;
+        }
+
+        .btn-cerrar:hover {
+            background-color: #7f8c8d;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .btn-editar {
+            background-color: #ffc107;
+            color: #333
+        }
+
+        .btn-editar:hover {
+            background-color: #e0a800;
+        }
+
+        .btn-eliminar {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        .btn-eliminar:hover {
+            background-color: #c82333;
+        }
+
+        @media (max-width: 768px) {
+            .detalles-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Sistema de Gestión de Matrículas</h1>
+        
+        <div class="filtros">
+            <input type="text" id="busqueda" placeholder="Buscar por nombre o ID...">
+            <select id="grupo-select">
+                <option value="">Todos los grupos</option>
+                <option value="401">Grupo 401</option>
+                <option value="402">Grupo 402</option>
+                <option value="403">Grupo 403</option>
+            </select>
+            <select id="estado-select">
+                <option value="">Todos los estados</option>
+                <option value="Activa">Activa</option>
+                <option value="Baja Temporal">Baja Temporal</option>
+                <option value="Baja Permanente">Baja Permanente</option>
+            </select>
+            <button id="btn-buscar">Buscar</button>
+        </div>
+        
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Estudiante</th>
+                    <th>Carrera</th>
+                    <th>Grupo</th>
+                    <th>Fecha</th>
+                    <th>Estado</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody id="tbody-matriculas">
+                </tbody>
+        </table>
+        
+        <div class="paginacion" id="paginacion">
+            </div>
+    </div>
+    
+    <div id="detalles-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h2 id="modal-titulo">Detalles de Matrícula</h2>
+            
+            <div class="detalles-grid">
+                <div class="detalles-card">
+                    <h3>Información del Estudiante</h3>
+                    <div class="detalles-item">
+                        <span class="detalles-label">ID Estudiante:</span> 
+                        <span id="estudiante-id"></span>
+                    </div>
+                    <div class="detalles-item">
+                        <span class="detalles-label">Nombre Completo:</span> 
+                        <span id="estudiante-nombre"></span>
+                    </div>
+                    <div class="detalles-item">
+                        <span class="detalles-label">Email:</span> 
+                        <span id="estudiante-email"></span>
+                    </div>
+                    <div class="detalles-item">
+                        <span class="detalles-label">Teléfono:</span> 
+                        <span id="estudiante-telefono"></span>
+                    </div>
+                </div>
+                
+                <div class="detalles-card">
+                    <h3>Información Académica</h3>
+                    <div class="detalles-item">
+                        <span class="detalles-label">Carrera:</span> 
+                        <span id="academico-carrera"></span>
+                    </div>
+                    <div class="detalles-item">
+                        <span class="detalles-label">Grupo:</span> 
+                        <span id="academico-grupo"></span>
+                    </div>
+                    <div class="detalles-item">
+                        <span class="detalles-label">Semestre:</span> 
+                        <span id="academico-semestre"></span>
+                    </div>
+                    <div class="detalles-item">
+                        <span class="detalles-label">Modalidad:</span> 
+                        <span id="academico-modalidad"></span>
+                    </div>
+                </div>
+                
+                <div class="detalles-card">
+                    <h3>Detalles de Matrícula</h3>
+                    <div class="detalles-item">
+                        <span class="detalles-label">ID Matrícula:</span> 
+                        <span id="matricula-id"></span>
+                    </div>
+                    <div class="detalles-item">
+                        <span class="detalles-label">Fecha:</span> 
+                        <span id="matricula-fecha"></span>
+                    </div>
+                    <div class="detalles-item">
+                        <span class="detalles-label">Estado:</span> 
+                        <span id="matricula-estado"></span>
+                    </div>
+                    <div class="detalles-item">
+                        <span class="detalles-label">Periodo Académico:</span> 
+                        <span id="matricula-periodo"></span>
+                    </div>
+                </div>
+            </div>
+            
+            <h3>Asignaturas Matriculadas</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Código</th>
+                        <th>Asignatura</th>
+                        <th>Créditos</th>
+                        <th>Grupo</th>
+                        <th>Horario</th>
+                    </tr>
+                </thead>
+                <tbody id="tbody-asignaturas">
+                    </tbody>
+            </table>
+            
+            <div class="text-center">
+                <button id="btn-cerrar-modal" class="btn-cerrar">Cerrar</button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+
+        // 1. Datos iniciales (se usarán si no hay nada en localStorage)
+        const initialMatriculasData = [
+            {
+                id: "001",
+                estudiante: "M",
+                carrera: "Ingeniería Informática",
+                grupo: "A",
+                fecha: "15/02/2023",
+                estado: "Activa",
+                detalles: {
+                    estudiante: {
+                        id: "1",
+                        nombre: "Soto Ledesma Fernando Daniel",
+                        email: "fernandodanielsoto27@gmailcom",
+                        telefono: "+52 668 463 4912"
+                    },
+                    academico: {
+                        carrera: "Ingeniería En Software",
+                        grupo: "403",
+                        semestre: "8to Semestre",
+                        modalidad: "Presencial"
+                    },
+                    matricula: {
+                        id: "M2023-001",
+                        fecha: "15/02/2023",
+                        estado: "Activa",
+                        periodoAcademico: "2023-2024"
+                    },
+                    asignaturas: [
+                        { codigo: "INF301", nombre: "Programación Avanzada", creditos: 6, grupo: "A1", horario: "Lun-Mie 08:00-10:00" },
+                        { codigo: "INF302", nombre: "Bases de Datos", creditos: 6, grupo: "A2", horario: "Mar-Jue 10:00-12:00" },
+                        { codigo: "INF303", nombre: "Redes de Computadoras", creditos: 4, grupo: "A1", horario: "Vie 14:00-18:00" }
+                    ]
+                }
+            },
+            {
+                id: "002",
+                estudiante: "Carlos Rodríguez",
+                carrera: "Ingeniería Civil",
+                grupo: "B",
+                fecha: "18/02/2023",
+                estado: "Activa",
+                detalles: {
+                    estudiante: {
+                        id: "E10046",
+                        nombre: "Carlos Rodríguez López",
+                        email: "carlos.rodriguez@example.com",
+                        telefono: "+34 623 456 789"
+                    },
+                    academico: {
+                        carrera: "Ingeniería Civil",
+                        grupo: "B",
+                        semestre: "3er Semestre",
+                        modalidad: "Presencial"
+                    },
+                    matricula: {
+                        id: "M2023-002",
+                        fecha: "18/02/2023",
+                        estado: "Activa",
+                        periodoAcademico: "2023-2024"
+                    },
+                    asignaturas: [
+                        { codigo: "CIV201", nombre: "Estructuras", creditos: 6, grupo: "B1", horario: "Lun-Mie 10:00-12:00" },
+                        { codigo: "CIV202", nombre: "Materiales de Construcción", creditos: 5, grupo: "B2", horario: "Mar-Jue 08:00-10:00" },
+                        { codigo: "CIV203", nombre: "Topografía", creditos: 4, grupo: "B1", horario: "Vie 10:00-14:00" }
+                    ]
+                }
+            },
+            {
+                id: "003",
+                estudiante: "Laura Martínez",
+                carrera: "Medicina",
+                grupo: "C",
+                fecha: "20/02/2023",
+                estado: "Pendiente",
+                detalles: {
+                    estudiante: {
+                        id: "E10047",
+                        nombre: "Laura Martínez García",
+                        email: "laura.martinez@example.com",
+                        telefono: "+34 634 567 890"
+                    },
+                    academico: {
+                        carrera: "Medicina",
+                        grupo: "C",
+                        semestre: "7mo Semestre",
+                        modalidad: "Presencial"
+                    },
+                    matricula: {
+                        id: "M2023-003",
+                        fecha: "20/02/2023",
+                        estado: "Pendiente",
+                        periodoAcademico: "2023-2024"
+                    },
+                    asignaturas: [
+                        { codigo: "MED401", nombre: "Anatomía Avanzada", creditos: 8, grupo: "C1", horario: "Lun-Mie 08:00-11:00" },
+                        { codigo: "MED402", nombre: "Farmacología", creditos: 7, grupo: "C2", horario: "Mar-Jue 11:00-14:00" },
+                        { codigo: "MED403", nombre: "Patología", creditos: 6, grupo: "C1", horario: "Vie 09:00-13:00" }
+                    ]
+                }
+            },
+            {
+                id: "004",
+                estudiante: "Juan Sánchez",
+                carrera: "Derecho",
+                grupo: "A",
+                fecha: "22/02/2023",
+                estado: "Cancelada",
+                detalles: {
+                    estudiante: {
+                        id: "E10048",
+                        nombre: "Juan Sánchez Ruiz",
+                        email: "juan.sanchez@example.com",
+                        telefono: "+34 645 678 901"
+                    },
+                    academico: {
+                        carrera: "Derecho",
+                        grupo: "A",
+                        semestre: "6to Semestre",
+                        modalidad: "Online"
+                    },
+                    matricula: {
+                        id: "M2023-004",
+                        fecha: "22/02/2023",
+                        estado: "Cancelada",
+                        periodoAcademico: "2023-2024"
+                    },
+                    asignaturas: [
+                        { codigo: "DER301", nombre: "Derecho Civil", creditos: 6, grupo: "A3", horario: "Lun-Mie 16:00-18:00" },
+                        { codigo: "DER302", nombre: "Derecho Penal", creditos: 6, grupo: "A2", horario: "Mar-Jue 18:00-20:00" },
+                        { codigo: "DER303", nombre: "Filosofía del Derecho", creditos: 4, grupo: "A1", horario: "Vie 16:00-20:00" }
+                    ]
+                }
+            },
+            {
+                id: "005",
+                estudiante: "Ana López",
+                carrera: "Psicología",
+                grupo: "B",
+                fecha: "23/02/2023",
+                estado: "Activa",
+                detalles: {
+                    estudiante: {
+                        id: "E10049",
+                        nombre: "Ana López Moreno",
+                        email: "ana.lopez@example.com",
+                        telefono: "+34 656 789 012"
+                    },
+                    academico: {
+                        carrera: "Psicología",
+                        grupo: "B",
+                        semestre: "4to Semestre",
+                        modalidad: "Presencial"
+                    },
+                    matricula: {
+                        id: "M2023-005",
+                        fecha: "23/02/2023",
+                        estado: "Activa",
+                        periodoAcademico: "2023-2024"
+                    },
+                    asignaturas: [
+                        { codigo: "PSI201", nombre: "Psicología Social", creditos: 5, grupo: "B3", horario: "Lun-Mie 09:00-11:00" },
+                        { codigo: "PSI202", nombre: "Psicología Clínica", creditos: 6, grupo: "B2", horario: "Mar-Jue 11:00-13:00" },
+                        { codigo: "PSI203", nombre: "Neuropsicología", creditos: 5, grupo: "B1", horario: "Vie 15:00-19:00" }
+                    ]
+                }
+            },
+            {
+                id: "006",
+                estudiante: "Pedro Fernández",
+                carrera: "Arquitectura",
+                grupo: "C",
+                fecha: "25/02/2023",
+                estado: "Pendiente",
+                detalles: {
+                    estudiante: {
+                        id: "E10050",
+                        nombre: "Pedro Fernández Castro",
+                        email: "pedro.fernandez@example.com",
+                        telefono: "+34 667 890 123"
+                    },
+                    academico: {
+                        carrera: "Arquitectura",
+                        grupo: "C",
+                        semestre: "8vo Semestre",
+                        modalidad: "Presencial"
+                    },
+                    matricula: {
+                        id: "M2023-006",
+                        fecha: "25/02/2023",
+                        estado: "Pendiente",
+                        periodoAcademico: "2023-2024"
+                    },
+                    asignaturas: [
+                        { codigo: "ARQ401", nombre: "Proyectos Arquitectónicos", creditos: 8, grupo: "C2", horario: "Lun-Mie 15:00-18:00" },
+                        { codigo: "ARQ402", nombre: "Urbanismo", creditos: 6, grupo: "C1", horario: "Mar-Jue 12:00-14:00" },
+                        { codigo: "ARQ403", nombre: "Construcción Avanzada", creditos: 5, grupo: "C2", horario: "Vie 09:00-13:00" }
+                    ]
+                }
+            },
+            {
+                id: "007",
+                estudiante: "Elena Torres",
+                carrera: "Economía",
+                grupo: "A",
+                fecha: "26/02/2023",
+                estado: "Activa",
+                detalles: {
+                    estudiante: {
+                        id: "E10051",
+                        nombre: "Elena Torres Vega",
+                        email: "elena.torres@example.com",
+                        telefono: "+34 678 901 234"
+                    },
+                    academico: {
+                        carrera: "Economía",
+                        grupo: "A",
+                        semestre: "3er Semestre",
+                        modalidad: "Online"
+                    },
+                    matricula: {
+                        id: "M2023-007",
+                        fecha: "26/02/2023",
+                        estado: "Activa",
+                        periodoAcademico: "2023-2024"
+                    },
+                    asignaturas: [
+                        { codigo: "ECO201", nombre: "Macroeconomía", creditos: 6, grupo: "A1", horario: "Lun-Mie 10:00-12:00" },
+                        { codigo: "ECO202", nombre: "Estadística Económica", creditos: 5, grupo: "A2", horario: "Mar-Jue 12:00-14:00" },
+                        { codigo: "ECO203", nombre: "Historia Económica", creditos: 4, grupo: "A1", horario: "Vie 10:00-14:00" }
+                    ]
+                }
+            },
+            {
+                id: "008",
+                estudiante: "Miguel Gómez",
+                carrera: "Física",
+                grupo: "B",
+                fecha: "27/02/2023",
+                estado: "Cancelada",
+                detalles: {
+                    estudiante: {
+                        id: "E10052",
+                        nombre: "Miguel Gómez Sanz",
+                        email: "miguel.gomez@example.com",
+                        telefono: "+34 689 012 345"
+                    },
+                    academico: {
+                        carrera: "Física",
+                        grupo: "B",
+                        semestre: "5to Semestre",
+                        modalidad: "Presencial"
+                    },
+                    matricula: {
+                        id: "M2023-008",
+                        fecha: "27/02/2023",
+                        estado: "Cancelada",
+                        periodoAcademico: "2023-2024"
+                    },
+                    asignaturas: [
+                        { codigo: "FIS301", nombre: "Física Cuántica", creditos: 7, grupo: "B2", horario: "Lun-Mie 08:00-10:00" },
+                        { codigo: "FIS302", nombre: "Mecánica", creditos: 6, grupo: "B1", horario: "Mar-Jue 10:00-12:00" },
+                        { codigo: "FIS303", nombre: "Electromagnetismo", creditos: 6, grupo: "B3", horario: "Vie 12:00-16:00" }
+                    ]
+                }
+            },
+            {
+                id: "009",
+                estudiante: "Carmen Ortiz",
+                carrera: "Química",
+                grupo: "C",
+                fecha: "01/03/2023",
+                estado: "Activa",
+                detalles: {
+                    estudiante: {
+                        id: "E10053",
+                        nombre: "Carmen Ortiz Díaz",
+                        email: "carmen.ortiz@example.com",
+                        telefono: "+34 690 123 456"
+                    },
+                    academico: {
+                        carrera: "Química",
+                        grupo: "C",
+                        semestre: "6to Semestre",
+                        modalidad: "Presencial"
+                    },
+                    matricula: {
+                        id: "M2023-009",
+                        fecha: "01/03/2023",
+                        estado: "Activa",
+                        periodoAcademico: "2023-2024"
+                    },
+                    asignaturas: [
+                        { codigo: "QUI301", nombre: "Química Orgánica", creditos: 6, grupo: "C1", horario: "Lun-Mie 11:00-13:00" },
+                        { codigo: "QUI302", nombre: "Química Analítica", creditos: 5, grupo: "C2", horario: "Mar-Jue 09:00-11:00" },
+                        { codigo: "QUI303", nombre: "Bioquímica", creditos: 5, grupo: "C3", horario: "Vie 11:00-15:00" }
+                    ]
+                }
+            },
+            {
+                id: "010",
+                estudiante: "David Navarro",
+                carrera: "Matemáticas",
+                grupo: "A",
+                fecha: "02/03/2023",
+                estado: "Pendiente",
+                detalles: {
+                    estudiante: {
+                        id: "E10054",
+                        nombre: "David Navarro Gil",
+                        email: "david.navarro@example.com",
+                        telefono: "+34 701 234 567"
+                    },
+                    academico: {
+                        carrera: "Matemáticas",
+                        grupo: "A",
+                        semestre: "4to Semestre",
+                        modalidad: "Presencial"
+                    },
+                    matricula: {
+                        id: "M2023-010",
+                        fecha: "02/03/2023",
+                        estado: "Pendiente",
+                        periodoAcademico: "2023-2024"
+                    },
+                    asignaturas: [
+                        { codigo: "MAT201", nombre: "Análisis Matemático", creditos: 7, grupo: "A2", horario: "Lun-Mie 12:00-14:00" },
+                        { codigo: "MAT202", nombre: "Álgebra Lineal", creditos: 6, grupo: "A1", horario: "Mar-Jue 14:00-16:00" },
+                        { codigo: "MAT203", nombre: "Estadística", creditos: 5, grupo: "A3", horario: "Vie 09:00-13:00" }
+                    ]
+                }
+            }
+        ];
+
+        // Carga o inicializa los datos de matrículas
+        let matriculas = []; // Cambiamos a 'let' para poder reasignarla
+        const storedMatriculas = localStorage.getItem('matriculasData');
+        if (storedMatriculas) {
+            try {
+                // Intenta parsear los datos. Si hay un error, usa los datos iniciales.
+                matriculas = JSON.parse(storedMatriculas);
+            } catch (e) {
+                console.error("Error al parsear datos de localStorage:", e);
+                matriculas = [...initialMatriculasData];
+                saveMatriculasToLocalStorage(); // Guarda los datos iniciales si hubo error
+            }
+        } else {
+            // Si no hay datos en localStorage, usa los iniciales y guárdalos
+            matriculas = [...initialMatriculasData];
+            saveMatriculasToLocalStorage();
+        }
+
+        // 2. Elementos del DOM
+        const tbodyMatriculas = document.getElementById('tbody-matriculas');
+        const busquedaInput = document.getElementById('busqueda');
+        const grupoSelect = document.getElementById('grupo-select');
+        const estadoSelect = document.getElementById('estado-select');
+        const btnBuscar = document.getElementById('btn-buscar');
+        const modal = document.getElementById('detalles-modal');
+        const closeModalBtn = document.querySelector('.close-modal');
+        const btnCerrarModal = document.getElementById('btn-cerrar-modal');
+        const tbodyAsignaturas = document.getElementById('tbody-asignaturas');
+
+        // 3. Configuración de paginación
+        const itemsPerPage = 5;
+        let currentPage = 1;
+        let filteredData = [...matriculas]; // Inicializa con todos los datos cargados
+
+        // --- Funciones para la persistencia de datos ---
+
+        /**
+         * Guarda el array 'matriculas' actual en localStorage.
+         */
+        function saveMatriculasToLocalStorage() {
+            localStorage.setItem('matriculasData', JSON.stringify(matriculas));
+        }
+
+        // --- Funciones principales ---
+
+        /**
+         * Carga los datos en la tabla, aplicando paginación.
+         * @param {Array} data - El array de matrículas a mostrar.
+         * @param {number} page - La página actual.
+         */
+        function cargarTabla(data, page) {
+            tbodyMatriculas.innerHTML = '';
+
+            // Cálculos para paginación
+            const start = (page - 1) * itemsPerPage;
+            const end = start + itemsPerPage;
+            const paginatedItems = data.slice(start, end);
+
+            if (paginatedItems.length === 0) {
+                const tr = document.createElement('tr');
+                tr.innerHTML = '<td colspan="7" class="text-center">No se encontraron resultados</td>';
+                tbodyMatriculas.appendChild(tr);
+            } else {
+                paginatedItems.forEach(item => {
+                    const tr = document.createElement('tr');
+
+                    let estadoClass = '';
+                    if (item.estado === 'Activa') estadoClass = 'estado-activa';
+                    else if (item.estado === 'Baja Temporal') estadoClass = 'estado-baja-temporal';
+                    else if (item.estado === 'Baja Permanente') estadoClass = 'estado-baja-permanente';
+
+                    tr.innerHTML = `
+                        <td>${item.id}</td>
+                        <td>${item.estudiante}</td>
+                        <td>${item.carrera}</td>
+                        <td>${item.grupo}</td>
+                        <td>${item.fecha}</td>
+                        <td class="${estadoClass}">${item.estado}</td>
+                        <td>
+                            <button class="btn-editar" onclick="editarMatricula('${item.id}')">Editar</button>
+                            <button class="btn-eliminar" onclick="eliminarMatricula('${item.id}')">Eliminar</button>
+                        </td>
+                    `;
+                    tbodyMatriculas.appendChild(tr);
+                });
+            }
+
+            // Actualizar paginación
+            const totalPages = Math.ceil(data.length / itemsPerPage);
+            const paginationHtml = generatePaginationHtml(totalPages, page);
+            paginacion.innerHTML = paginationHtml;
+        }
+
+        /**
+         * Genera el HTML para los botones de paginación.
+         * @param {number} totalPages - Número total de páginas.
+         * @param {number} currentPage - Página actual.
+         * @returns {string} HTML de paginación.
+         */
+        function generatePaginationHtml(totalPages, currentPage) {
+            let html = '';
+            for (let i = 1; i <= totalPages; i++) {
+                const isActive = i === currentPage ? 'active' : '';
+                html += `<button class="btn-pagination ${isActive}" onclick="changePage(${i})">${i}</button>`;
+            }
+            return html;
+        }
+
+        /**
+         * Cambia la página actual de la tabla y la recarga.
+         * Esta función es global para ser accesible desde el `onclick` de los botones.
+         * @param {number} page - La nueva página a cargar.
+         */
+        window.changePage = function(page) {
+            currentPage = page;
+            cargarTabla(filteredData, currentPage);
+        }
+
+        /**
+         * Aplica los filtros de búsqueda y estado, actualizando los datos filtrados y la tabla.
+         */
+        function aplicarFiltros() {
+            const searchTerm = busquedaInput.value.toLowerCase();
+            const selectedGrupo = grupoSelect.value;
+            const selectedEstado = estadoSelect.value;
+
+            filteredData = matriculas.filter(matricula => {
+                const matchesSearch = matricula.estudiante.toLowerCase().includes(searchTerm) ||
+                                      matricula.id.toLowerCase().includes(searchTerm);
+                const matchesGrupo = selectedGrupo === "" || matricula.grupo === selectedGrupo;
+                const matchesEstado = selectedEstado === "" || matricula.estado === selectedEstado;
+                return matchesSearch && matchesGrupo && matchesEstado;
+            });
+            currentPage = 1; // Reiniciar a la primera página después de filtrar
+            cargarTabla(filteredData, currentPage);
+        }
+
+        // --- Funciones para el modal de detalles ---
+
+        /**
+         * Muestra los detalles completos de una matrícula en un modal.
+         * Esta función es global para ser accesible desde el `onclick` de los botones.
+         * @param {string} id - El ID de la matrícula cuyos detalles se quieren mostrar.
+         */
+        window.mostrarDetallesMatricula = function(id) {
+            const matricula = matriculas.find(m => m.id === id);
+            if (matricula && matricula.detalles) {
+                const detalles = matricula.detalles;
+
+                document.getElementById('estudiante-id').textContent = detalles.estudiante.id;
+                document.getElementById('estudiante-nombre').textContent = detalles.estudiante.nombre;
+                document.getElementById('estudiante-email').textContent = detalles.estudiante.email;
+                document.getElementById('estudiante-telefono').textContent = detalles.estudiante.telefono;
+
+                document.getElementById('academico-carrera').textContent = detalles.academico.carrera;
+                document.getElementById('academico-grupo').textContent = detalles.academico.grupo;
+                document.getElementById('academico-semestre').textContent = detalles.academico.semestre;
+                document.getElementById('academico-modalidad').textContent = detalles.academico.modalidad;
+
+                document.getElementById('matricula-id').textContent = detalles.matricula.id;
+                document.getElementById('matricula-fecha').textContent = detalles.matricula.fecha;
+                document.getElementById('matricula-estado').textContent = detalles.matricula.estado;
+                document.getElementById('matricula-periodo').textContent = detalles.matricula.periodoAcademico;
+
+                tbodyAsignaturas.innerHTML = '';
+                detalles.asignaturas.forEach(asignatura => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>${asignatura.codigo}</td>
+                        <td>${asignatura.nombre}</td>
+                        <td>${asignatura.creditos}</td>
+                        <td>${asignatura.grupo}</td>
+                        <td>${asignatura.horario}</td>
+                    `;
+                    tbodyAsignaturas.appendChild(tr);
+                });
+
+                modal.style.display = 'block';
+            }
+        }
+
+        // --- Funciones de Editar y Eliminar (ahora globales para ser accesibles desde el HTML) ---
+
+        /**
+         * Elimina una matrícula del array y actualiza la tabla y localStorage.
+         * Esta función es global para ser accesible desde el `onclick` de los botones.
+         * @param {string} id - El ID de la matrícula a eliminar.
+         */
+        window.eliminarMatricula = function(id) {
+            if (confirm(`¿Estás seguro de que quieres eliminar la matrícula con ID ${id}?`)) {
+                // Encontrar el índice de la matrícula a eliminar
+                const index = matriculas.findIndex(m => m.id === id);
+
+                if (index !== -1) {
+                    // Eliminar la matrícula del array original
+                    matriculas.splice(index, 1);
+                    saveMatriculasToLocalStorage(); // Guardar los cambios
+                    aplicarFiltros(); // Re-aplicar filtros y recargar la tabla
+                    alert(`Matrícula con ID ${id} eliminada correctamente.`);
+                } else {
+                    alert(`No se encontró la matrícula con ID ${id}.`);
+                }
+            }
+        };
+
+        /**
+         * Permite editar los campos principales de una matrícula y actualiza la tabla y localStorage.
+         * Esta función es global para ser accesible desde el `onclick` de los botones.
+         * @param {string} id - El ID de la matrícula a editar.
+         */
+        window.editarMatricula = function(id) {
+            const matriculaAEditar = matriculas.find(m => m.id === id);
+
+            if (matriculaAEditar) {
+                // Usamos prompt para la edición rápida. Para una UI real, se usaría un modal/formulario.
+                const nuevoEstudiante = prompt('Editar Nombre del Estudiante:', matriculaAEditar.estudiante);
+                const nuevaCarrera = prompt('Editar Carrera:', matriculaAEditar.carrera);
+                const nuevoGrupo = prompt('Editar Grupo:', matriculaAEditar.grupo);
+                const nuevoEstado = prompt('Editar Estado (Activa, Baja Temporal, Baja Permanente):', matriculaAEditar.estado);
+
+                // Validar y actualizar si el usuario no canceló los prompts
+                if (nuevoEstudiante !== null && nuevaCarrera !== null && nuevoGrupo !== null && nuevoEstado !== null) {
+                    matriculaAEditar.estudiante = nuevoEstudiante;
+                    matriculaAEditar.carrera = nuevaCarrera;
+                    matriculaAEditar.grupo = nuevoGrupo;
+                    // Opcional: Validar que el estado sea uno de los valores permitidos
+                    if (['Activa', 'Baja Temporal', 'Baja Permanente'].includes(nuevoEstado)) {
+                        matriculaAEditar.estado = nuevoEstado;
+                        // Actualizar también el estado en los detalles para consistencia
+                        matriculaAEditar.detalles.matricula.estado = nuevoEstado;
+                    } else {
+                        alert('Estado no válido. Por favor, use "Activa", "Baja Temporal" o "Baja Permanente".');
+                        return; // Salir de la función si el estado no es válido
+                    }
+
+                    saveMatriculasToLocalStorage(); // Guardar los cambios
+                    aplicarFiltros(); // Re-aplicar filtros y recargar la tabla
+                    alert(`Matrícula con ID ${id} actualizada correctamente.`);
+                } else {
+                    alert('Edición cancelada.');
+                }
+            } else {
+                alert(`No se encontró la matrícula con ID ${id}.`);
+            }
+        };
+
+
+        // --- Event Listeners ---
+
+        btnBuscar.addEventListener('click', aplicarFiltros);
+        busquedaInput.addEventListener('keyup', aplicarFiltros); // Búsqueda en vivo
+        grupoSelect.addEventListener('change', aplicarFiltros);
+        estadoSelect.addEventListener('change', aplicarFiltros);
+
+        // Event listeners para cerrar el modal de detalles
+        closeModalBtn.addEventListener('click', () => {
+            modal.style.display = 'none';
+        });
+
+        btnCerrarModal.addEventListener('click', () => {
+            modal.style.display = 'none';
+        });
+
+        window.addEventListener('click', (event) => {
+            if (event.target === modal) {
+                modal.style.display = 'none';
+            }
+        });
+
+        // Cargar la tabla inicialmente con los datos (ya sean iniciales o cargados de localStorage)
+        aplicarFiltros(); // Esto también inicializa filteredData y carga la tabla
+    });
+</script>
+</body>
+</html>
