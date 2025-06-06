@@ -425,7 +425,8 @@
             loginSection.classList.remove("show");
             checadorSection.classList.remove("show");
 
-            if (["administrador", "estudiante", "maestro"].includes(role)) {
+            // Incluir "jefe de carrera" en los roles que requieren login
+            if (["administrador", "estudiante", "maestro", "jefe de carrera"].includes(role)) {
                 setTimeout(() => {
                     loginSection.classList.add("show");
                 }, 100);
@@ -476,7 +477,7 @@
                         administrador: "admin.html",
                         maestro: "maestro.html",
                         estudiante: "estudiante.html",
-                        jefedecarrera: "Jefa de Carrera.html"
+                        "jefe de carrera": "jefa-carrera.html"  // Corregido aquí
                     };
                     window.location.href = paginas[role];
                 }, 2000);
