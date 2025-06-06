@@ -4,13 +4,417 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sistema de Acceso</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            height: 100vh;
+            overflow: hidden;
+            position: relative;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        /* Fondo animado */
+        .background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            overflow: hidden;
+        }
+
+        .background::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, 
+                transparent 30%, 
+                rgba(255,255,255,0.1) 50%, 
+                transparent 70%);
+            animation: shimmer 6s linear infinite;
+        }
+
+        .floating-shapes {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+        }
+
+        .shape {
+            position: absolute;
+            border-radius: 50%;
+            opacity: 0.1;
+            animation: float 8s ease-in-out infinite;
+        }
+
+        .shape:nth-child(1) {
+            width: 80px;
+            height: 80px;
+            background: #ff6b6b;
+            top: 20%;
+            left: 10%;
+            animation-delay: 0s;
+        }
+
+        .shape:nth-child(2) {
+            width: 120px;
+            height: 120px;
+            background: #4ecdc4;
+            top: 60%;
+            right: 10%;
+            animation-delay: 2s;
+        }
+
+        .shape:nth-child(3) {
+            width: 60px;
+            height: 60px;
+            background: #45b7d1;
+            bottom: 20%;
+            left: 20%;
+            animation-delay: 4s;
+        }
+
+        .shape:nth-child(4) {
+            width: 100px;
+            height: 100px;
+            background: #f9ca24;
+            top: 30%;
+            right: 30%;
+            animation-delay: 1s;
+        }
+
+        /* Partículas */
+        .particles {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+        }
+
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: rgba(255,255,255,0.6);
+            border-radius: 50%;
+            animation: twinkle 3s ease-in-out infinite;
+        }
+
+        .particle:nth-child(1) { top: 20%; left: 15%; animation-delay: 0s; }
+        .particle:nth-child(2) { top: 40%; right: 20%; animation-delay: 1s; }
+        .particle:nth-child(3) { bottom: 30%; left: 30%; animation-delay: 2s; }
+        .particle:nth-child(4) { top: 70%; right: 15%; animation-delay: 0.5s; }
+        .particle:nth-child(5) { bottom: 20%; right: 40%; animation-delay: 1.5s; }
+
+        /* Container principal */
+        .container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            position: relative;
+            z-index: 10;
+            padding: 20px;
+        }
+
+        .login-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 25px;
+            padding: 40px;
+            width: 100%;
+            max-width: 420px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.2);
+            animation: slideUp 0.8s ease-out;
+            transition: all 0.3s ease;
+        }
+
+        .login-card:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateY(-5px);
+            box-shadow: 0 35px 60px rgba(0,0,0,0.3);
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .icon-container {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 50%;
+            margin-bottom: 20px;
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+
+        .icon {
+            width: 35px;
+            height: 35px;
+            color: white;
+        }
+
+        .title {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .subtitle {
+            color: rgba(255,255,255,0.8);
+            font-size: 0.95rem;
+        }
+
+        /* Form elements */
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .select-wrapper {
+            position: relative;
+        }
+
+        select {
+            width: 100%;
+            padding: 18px 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 15px;
+            color: white;
+            font-size: 1rem;
+            appearance: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        select:focus {
+            outline: none;
+            border-color: #667eea;
+            background: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 0 20px rgba(102, 126, 234, 0.3);
+        }
+
+        select option {
+            background: #2d3748;
+            color: white;
+            padding: 10px;
+        }
+
+        .select-wrapper::after {
+            content: '▼';
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: rgba(255,255,255,0.7);
+            pointer-events: none;
+        }
+
+        /* Input fields */
+        .input-group {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 20px;
+            height: 20px;
+            color: rgba(255,255,255,0.6);
+        }
+
+        input[type="text"], input[type="password"] {
+            width: 100%;
+            padding: 18px 20px 18px 55px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 15px;
+            color: white;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        input[type="text"]:focus, input[type="password"]:focus {
+            outline: none;
+            border-color: #667eea;
+            background: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 0 20px rgba(102, 126, 234, 0.3);
+        }
+
+        input::placeholder {
+            color: rgba(255,255,255,0.6);
+        }
+
+        /* Buttons */
+        .btn {
+            width: 100%;
+            padding: 18px;
+            border: none;
+            border-radius: 15px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #56ab2f, #a8e6cf);
+            color: white;
+            box-shadow: 0 10px 25px rgba(86, 171, 47, 0.3);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        /* Sections */
+        .section {
+            display: none;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        .section.show {
+            display: block;
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            color: rgba(255,255,255,0.6);
+            font-size: 0.85rem;
+        }
+
+        /* Alerts */
+        .alert {
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 15px;
+            animation: slideDown 0.3s ease-out;
+        }
+
+        .alert-error {
+            background: rgba(239, 68, 68, 0.9);
+            color: white;
+            border-left: 4px solid #dc2626;
+        }
+
+        .alert-success {
+            background: rgba(34, 197, 94, 0.9);
+            color: white;
+            border-left: 4px solid #16a34a;
+        }
+
+        /* Animations */
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            33% { transform: translateY(-20px) rotate(5deg); }
+            66% { transform: translateY(10px) rotate(-5deg); }
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.3; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.2); }
+        }
+
+        @keyframes slideUp {
+            0% { opacity: 0; transform: translateY(50px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeIn {
+            0% { opacity: 0; transform: translateY(20px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes slideDown {
+            0% { opacity: 0; transform: translateY(-20px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes glow {
+            0% { box-shadow: 0 0 20px rgba(102, 126, 234, 0.3); }
+            100% { box-shadow: 0 0 30px rgba(102, 126, 234, 0.6); }
+        }
+
+        /* Responsive */
+        @media (max-width: 480px) {
+            .login-card {
+                padding: 30px 25px;
+                margin: 10px;
+            }
+            
+            .title {
+                font-size: 1.8rem;
+            }
+            
+            .icon-container {
+                width: 60px;
+                height: 60px;
+            }
+            
+            .icon {
+                width: 30px;
+                height: 30px;
+            }
+        }
+    </style>
     <script>
         const USUARIOS = [
             { username: "admin", password: "1234", type: "maestro" },
             { username: "juan", password: "abcd", type: "estudiante" },
             { username: "maria", password: "5678", type: "maestro" },
-            { username: "admin", password: "123", type: "administrador" }   
+            { username: "admin", password: "123", type: "administrador" },
+            { username: "Jefa de Carrera", password: "12345", type: "jefe de carrera" }   
         ];
 
         function handleRoleChange() {
@@ -18,14 +422,33 @@
             const loginSection = document.getElementById("login-section");
             const checadorSection = document.getElementById("checador-section");
             
-            loginSection.classList.add("hidden");
-            checadorSection.classList.add("hidden");
+            loginSection.classList.remove("show");
+            checadorSection.classList.remove("show");
 
             if (["administrador", "estudiante", "maestro"].includes(role)) {
-                loginSection.classList.remove("hidden");
+                setTimeout(() => {
+                    loginSection.classList.add("show");
+                }, 100);
             } else if (role === "checador") {
-                checadorSection.classList.remove("hidden");
+                setTimeout(() => {
+                    checadorSection.classList.add("show");
+                }, 100);
             }
+        }
+
+        function showAlert(message, type = 'error', container) {
+            // Remove existing alerts
+            const existingAlerts = container.querySelectorAll('.alert');
+            existingAlerts.forEach(alert => alert.remove());
+            
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert alert-${type}`;
+            alertDiv.innerHTML = `<p>${message}</p>`;
+            container.appendChild(alertDiv);
+            
+            setTimeout(() => {
+                alertDiv.remove();
+            }, 4000);
         }
 
         function handleLogin(event) {
@@ -40,68 +463,173 @@
                 user.password === password
             );
 
+            const btn = event.target.querySelector('button[type="submit"]');
+            const loginSection = document.getElementById("login-section");
+
             if (usuarioValido) {
-                // Redirección según tipo de usuario
-                const paginas = {
-                    administrador: "admin.html",
-                    maestro: "maestro.html",
-                    estudiante: "estudiante.html"
-                };
-                window.location.href = paginas[role];
+                btn.innerHTML = '✓ Accediendo...';
+                btn.style.background = 'linear-gradient(135deg, #56ab2f, #a8e6cf)';
+                showAlert('✅ Credenciales válidas. Redirigiendo...', 'success', loginSection);
+                
+                setTimeout(() => {
+                    const paginas = {
+                        administrador: "admin.html",
+                        maestro: "maestro.html",
+                        estudiante: "estudiante.html",
+                        jefedecarrera: "Jefa de Carrera.html"
+                    };
+                    window.location.href = paginas[role];
+                }, 2000);
             } else {
-                alert("Error: Credenciales inválidas");
+                showAlert('❌ Credenciales inválidas. Por favor, verifica tus datos.', 'error', loginSection);
                 document.getElementById("password").value = "";
+                
+                // Reset button
+                setTimeout(() => {
+                    btn.innerHTML = '🚀 Ingresar al Sistema';
+                    btn.style.background = 'linear-gradient(135deg, #667eea, #764ba2)';
+                }, 3000);
             }
         }
 
         function handleChecador() {
             const codigo = document.getElementById("codigo-checador").value;
+            const btn = document.getElementById("btn-checador");
+            const checadorSection = document.getElementById("checador-section");
+            
             if (codigo === "2024") {
-                window.location.href = "checador.html";
+                btn.innerHTML = '✓ Código Válido...';
+                btn.style.background = 'linear-gradient(135deg, #56ab2f, #a8e6cf)';
+                showAlert('✅ Código válido. Accediendo al checador...', 'success', checadorSection);
+                
+                setTimeout(() => {
+                    window.location.href = "checador.html";
+                }, 2000);
             } else {
-                alert("Código de acceso incorrecto");
+                showAlert('❌ Código de acceso incorrecto. Inténtalo de nuevo.', 'error', checadorSection);
+                
+                // Reset button
+                setTimeout(() => {
+                    btn.innerHTML = '✅ Validar Código';
+                    btn.style.background = 'linear-gradient(135deg, #56ab2f, #a8e6cf)';
+                }, 3000);
             }
+        }
+
+        function typeWriter() {
+            const title = document.querySelector('.title');
+            const text = 'Acceso al Sistema';
+            title.textContent = '';
+            let i = 0;
+            
+            function type() {
+                if (i < text.length) {
+                    title.textContent += text.charAt(i);
+                    i++;
+                    setTimeout(type, 100);
+                }
+            }
+            
+            setTimeout(type, 800);
         }
 
         document.addEventListener("DOMContentLoaded", () => {
             document.getElementById("user-type").addEventListener("change", handleRoleChange);
             document.getElementById("login-form").addEventListener("submit", handleLogin);
             document.getElementById("btn-checador").addEventListener("click", handleChecador);
+            
+            // Typing effect
+            typeWriter();
         });
     </script>
 </head>
-<body class="bg-gray-100 flex justify-center items-center min-h-screen">
-    <div class="bg-white shadow-lg rounded-xl p-8 max-w-md w-full">
-        <h2 class="text-2xl font-semibold text-center mb-4">Acceso al Sistema</h2>
-        
-        <select id="user-type" class="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500">
-            <option value="">Selecciona tu rol</option>
-            <option value="estudiante">Estudiante</option>
-            <option value="maestro">Maestro</option>
-            <option value="checador">Checador</option>
-            <option value="administrador">Administrador</option>
-        </select>
-
-        <!-- Sección de Login -->
-        <div id="login-section" class="mt-4 hidden">
-            <form id="login-form" class="flex flex-col space-y-3">
-                <input type="text" id="username" placeholder="Usuario" required
-                       class="p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500">
-                <input type="password" id="password" placeholder="Contraseña" required
-                       class="p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500">
-                <button type="submit" class="bg-blue-500 text-white p-2 rounded-md hover:bg-blue-600">
-                    Ingresar
-                </button>
-            </form>
+<body>
+    <!-- Fondo animado -->
+    <div class="background">
+        <div class="floating-shapes">
+            <div class="shape"></div>
+            <div class="shape"></div>
+            <div class="shape"></div>
+            <div class="shape"></div>
         </div>
+        <div class="particles">
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+        </div>
+    </div>
 
-        <!-- Sección de Checador -->
-        <div id="checador-section" class="mt-4 hidden">
-            <input type="text" id="codigo-checador" placeholder="Código de acceso (2024)" 
-                   class="p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 w-full">
-            <button id="btn-checador" class="bg-green-500 text-white p-2 rounded-md mt-2 w-full hover:bg-green-600">
-                Validar Código
-            </button>
+    <!-- Container principal -->
+    <div class="container">
+        <div class="login-card">
+            <!-- Header -->
+            <div class="header">
+                <div class="icon-container">
+                    <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                    </svg>
+                </div>
+                <h1 class="title"></h1>
+                <p class="subtitle">Selecciona tu rol para continuar</p>
+            </div>
+
+            <!-- Selector de rol -->
+            <div class="form-group">
+                <div class="select-wrapper">
+                    <select id="user-type">
+                        <option value="">🎭 Selecciona tu rol</option>
+                        <option value="estudiante">🎓 Estudiante</option>
+                        <option value="maestro">👨‍🏫 Maestro</option>
+                        <option value="checador">⏰ Checador</option>
+                        <option value="administrador">⚙️ Administrador</option>
+                        <option value="jefe de carrera">👑 Jefa de Carrera</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Sección de Login -->
+            <div id="login-section" class="section">
+                <form id="login-form">
+                    <div class="input-group">
+                        <svg class="input-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                        </svg>
+                        <input type="text" id="username" placeholder="Usuario" required>
+                    </div>
+                    
+                    <div class="input-group">
+                        <svg class="input-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                        </svg>
+                        <input type="password" id="password" placeholder="Contraseña" required>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary">
+                        🚀 Ingresar al Sistema
+                    </button>
+                </form>
+            </div>
+
+            <!-- Sección de Checador -->
+            <div id="checador-section" class="section">
+                <div class="input-group">
+                    <svg class="input-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"></path>
+                    </svg>
+                    <input type="text" id="codigo-checador" placeholder="Código de acceso (2024)">
+                </div>
+                
+                <button id="btn-checador" class="btn btn-success">
+                    ✅ Validar Código
+                </button>
+            </div>
+
+            <!-- Footer -->
+            <div class="footer">
+                <p>🔒 Acceso seguro y protegido</p>
+            </div>
         </div>
     </div>
 </body>
