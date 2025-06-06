@@ -414,8 +414,14 @@
             { username: "juan", password: "abcd", type: "estudiante" },
             { username: "maria", password: "5678", type: "maestro" },
             { username: "admin", password: "123", type: "administrador" },
-            { username: "Jefa de Carrera", password: "12345", type: "jefe de carrera" }   
+            { username: "jefa", password: "carrera2024", type: "jefe de carrera" },
+            { username: "directora", password: "admin2024", type: "jefe de carrera" }
         ];
+
+        // Función para debug - puedes eliminarla después
+        function debugLogin() {
+            console.log("Usuarios disponibles:", USUARIOS);
+        }
 
         function handleRoleChange() {
             const role = document.getElementById("user-type").value;
@@ -458,11 +464,18 @@
             const username = document.getElementById("username").value.trim();
             const password = document.getElementById("password").value.trim();
 
-            const usuarioValido = USUARIOS.find(user => 
-                user.type === role &&
-                user.username === username &&
-                user.password === password
-            );
+            // Debug para ver qué está pasando
+            console.log("Role seleccionado:", role);
+            console.log("Username:", username);
+            console.log("Password:", password);
+            console.log("Buscando usuario con type:", role);
+
+            const usuarioValido = USUARIOS.find(user => {
+                console.log(`Comparando: ${user.type} === ${role} && ${user.username} === ${username} && ${user.password} === ${password}`);
+                return user.type === role && user.username === username && user.password === password;
+            });
+
+            console.log("Usuario encontrado:", usuarioValido);
 
             const btn = event.target.querySelector('button[type="submit"]');
             const loginSection = document.getElementById("login-section");
@@ -477,8 +490,9 @@
                         administrador: "admin.html",
                         maestro: "maestro.html",
                         estudiante: "estudiante.html",
-                        "jefe de carrera": "jefa-carrera.html"  // Corregido aquí
+                        "jefe de carrera": "Jefa-Carrera.html"
                     };
+
                     window.location.href = paginas[role];
                 }, 2000);
             } else {
