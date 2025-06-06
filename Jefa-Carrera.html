@@ -1,0 +1,1727 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Administración - Jefa de Carrera</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .header h1 {
+            color: #4a5568;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .header p {
+            color: #718096;
+            font-size: 1.1em;
+        }
+
+        .nav-tabs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 30px;
+            justify-content: center;
+        }
+
+        .nav-tab {
+            background: rgba(255, 255, 255, 0.9);
+            border: none;
+            padding: 15px 25px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            color: #4a5568;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .nav-tab:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .nav-tab.active {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .section {
+            display: none;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .section h2 {
+            color: #4a5568;
+            margin-bottom: 25px;
+            font-size: 1.8em;
+            font-weight: 600;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #4a5568;
+        }
+
+        .form-group input, .form-group select, .form-group textarea {
+            padding: 12px 15px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #fc8181, #f56565);
+            box-shadow: 0 4px 15px rgba(252, 129, 129, 0.3);
+        }
+
+        .btn-danger:hover {
+            box-shadow: 0 8px 25px rgba(252, 129, 129, 0.4);
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 25px;
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .data-table th, .data-table td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .data-table th {
+            background: linear-gradient(135deg, #f7fafc, #edf2f7);
+            font-weight: 600;
+            color: #4a5568;
+        }
+
+        .data-table tr:hover {
+            background: rgba(102, 126, 234, 0.05);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.7));
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-number {
+            font-size: 2.5em;
+            font-weight: 700;
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .stat-label {
+            color: #718096;
+            font-weight: 600;
+        }
+
+        .schedule-grid {
+            display: grid;
+            grid-template-columns: 100px repeat(7, 1fr);
+            gap: 2px;
+            margin-top: 20px;
+            background: #e2e8f0;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .schedule-header, .schedule-cell {
+            background: white;
+            padding: 15px 10px;
+            text-align: center;
+            font-size: 12px;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .schedule-header {
+            background: linear-gradient(135deg, #f7fafc, #edf2f7);
+            font-weight: 600;
+            color: #4a5568;
+        }
+
+        .schedule-cell.occupied {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            font-weight: 600;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            background: white;
+            margin: 5% auto;
+            padding: 30px;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 600px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            animation: modalSlide 0.3s ease-out;
+        }
+
+        @keyframes modalSlide {
+            from { transform: translateY(-50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .close:hover {
+            color: #667eea;
+        }
+
+        .alert {
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 12px;
+            font-weight: 600;
+        }
+
+        .alert-success {
+            background: linear-gradient(135deg, #c6f6d5, #9ae6b4);
+            color: #22543d;
+        }
+
+        .alert-error {
+            background: linear-gradient(135deg, #fed7d7, #fc8181);
+            color: #742a2a;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .schedule-grid {
+                font-size: 10px;
+                grid-template-columns: 80px repeat(7, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📚 Sistema de Administración</h1>
+            <p>Gestión Integral para Jefa de Carrera</p>
+        </div>
+
+        <div class="nav-tabs">
+            <button class="nav-tab active" onclick="showSection('dashboard')">Dashboard</button>
+            <button class="nav-tab" onclick="showSection('materias')">Materias</button>
+            <button class="nav-tab" onclick="showSection('maestros')">Maestros</button>
+            <button class="nav-tab" onclick="showSection('grupos')">Grupos</button>
+            <button class="nav-tab" onclick="showSection('aulas')">Aulas</button>
+            <button class="nav-tab" onclick="showSection('checadores')">Checadores</button>
+            <button class="nav-tab" onclick="showSection('horarios')">Horarios</button>
+        </div>
+
+        <!-- Dashboard -->
+        <div id="dashboard" class="section active">
+            <h2>📊 Dashboard General</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number" id="totalMaterias">0</div>
+                    <div class="stat-label">Materias</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="totalMaestros">0</div>
+                    <div class="stat-label">Maestros</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="totalGrupos">0</div>
+                    <div class="stat-label">Grupos</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="totalAulas">0</div>
+                    <div class="stat-label">Aulas</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="totalChecadores">0</div>
+                    <div class="stat-label">Checadores</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="totalHorarios">0</div>
+                    <div class="stat-label">Horarios</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Materias -->
+        <div id="materias" class="section">
+            <h2>📖 Gestión de Materias</h2>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>Código de Materia:</label>
+                    <input type="text" id="codigoMateria" placeholder="Ej: MAT101">
+                </div>
+                <div class="form-group">
+                    <label>Nombre de la Materia:</label>
+                    <input type="text" id="nombreMateria" placeholder="Ej: Cálculo Diferencial">
+                </div>
+                <div class="form-group">
+                    <label>Créditos:</label>
+                    <input type="number" id="creditosMateria" placeholder="Ej: 6">
+                </div>
+                <div class="form-group">
+                    <label>Semestre:</label>
+                    <select id="semestreMateria">
+                        <option value="">Seleccionar...</option>
+                        <option value="1">1° Semestre</option>
+                        <option value="2">2° Semestre</option>
+                        <option value="3">3° Semestre</option>
+                        <option value="4">4° Semestre</option>
+                        <option value="5">5° Semestre</option>
+                        <option value="6">6° Semestre</option>
+                        <option value="7">7° Semestre</option>
+                        <option value="8">8° Semestre</option>
+                    </select>
+                </div>
+            </div>
+            <button class="btn" onclick="agregarMateria()">➕ Agregar Materia</button>
+            <table class="data-table" id="tablaMaterias">
+                <thead>
+                    <tr>
+                        <th>Código</th>
+                        <th>Nombre</th>
+                        <th>Créditos</th>
+                        <th>Semestre</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+
+        <!-- Maestros -->
+        <div id="maestros" class="section">
+            <h2>👨‍🏫 Gestión de Maestros</h2>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>ID del Maestro:</label>
+                    <input type="text" id="idMaestro" placeholder="Ej: M001">
+                </div>
+                <div class="form-group">
+                    <label>Nombre Completo:</label>
+                    <input type="text" id="nombreMaestro" placeholder="Ej: Dr. Juan Pérez">
+                </div>
+                <div class="form-group">
+                    <label>Email:</label>
+                    <input type="email" id="emailMaestro" placeholder="juan.perez@universidad.edu">
+                </div>
+                <div class="form-group">
+                    <label>Teléfono:</label>
+                    <input type="tel" id="telefonoMaestro" placeholder="123-456-7890">
+                </div>
+                <div class="form-group">
+                    <label>Especialidad:</label>
+                    <input type="text" id="especialidadMaestro" placeholder="Ej: Matemáticas">
+                </div>
+                <div class="form-group">
+                    <label>Tipo de Contrato:</label>
+                    <select id="tipoContrato">
+                        <option value="">Seleccionar...</option>
+                        <option value="tiempo-completo">Tiempo Completo</option>
+                        <option value="asignatura">Por Asignatura</option>
+                        <option value="medio-tiempo">Medio Tiempo</option>
+                    </select>
+                </div>
+            </div>
+            <button class="btn" onclick="agregarMaestro()">➕ Agregar Maestro</button>
+            <table class="data-table" id="tablaMaestros">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nombre</th>
+                        <th>Email</th>
+                        <th>Especialidad</th>
+                        <th>Contrato</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+
+        <!-- Grupos -->
+        <div id="grupos" class="section">
+            <h2>👥 Gestión de Grupos</h2>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>ID del Grupo:</label>
+                    <input type="text" id="idGrupo" placeholder="Ej: G-A1">
+                </div>
+                <div class="form-group">
+                    <label>Materia:</label>
+                    <select id="materiaGrupo">
+                        <option value="">Seleccionar materia...</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Maestro:</label>
+                    <select id="maestroGrupo">
+                        <option value="">Seleccionar maestro...</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Jefe de Grupo:</label>
+                    <input type="text" id="jefeGrupo" placeholder="Nombre del jefe de grupo">
+                </div>
+                <div class="form-group">
+                    <label>Capacidad Máxima:</label>
+                    <input type="number" id="capacidadGrupo" placeholder="Ej: 30">
+                </div>
+                <div class="form-group">
+                    <label>Período:</label>
+                    <select id="periodoGrupo">
+                        <option value="">Seleccionar...</option>
+                        <option value="2025-1">2025-1</option>
+                        <option value="2025-2">2025-2</option>
+                        <option value="2025-3">2025-3</option>
+                    </select>
+                </div>
+            </div>
+            <button class="btn" onclick="agregarGrupo()">➕ Agregar Grupo</button>
+            <table class="data-table" id="tablaGrupos">
+                <thead>
+                    <tr>
+                        <th>ID Grupo</th>
+                        <th>Materia</th>
+                        <th>Maestro</th>
+                        <th>Jefe de Grupo</th>
+                        <th>Capacidad</th>
+                        <th>Período</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+
+        <!-- Aulas -->
+        <div id="aulas" class="section">
+            <h2>🏫 Gestión de Aulas</h2>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>Número de Aula:</label>
+                    <input type="text" id="numeroAula" placeholder="Ej: A-101">
+                </div>
+                <div class="form-group">
+                    <label>Edificio:</label>
+                    <input type="text" id="edificioAula" placeholder="Ej: Edificio A">
+                </div>
+                <div class="form-group">
+                    <label>Capacidad:</label>
+                    <input type="number" id="capacidadAula" placeholder="Ej: 40">
+                </div>
+                <div class="form-group">
+                    <label>Tipo de Aula:</label>
+                    <select id="tipoAula">
+                        <option value="">Seleccionar...</option>
+                        <option value="teorica">Teórica</option>
+                        <option value="laboratorio">Laboratorio</option>
+                        <option value="taller">Taller</option>
+                        <option value="auditorio">Auditorio</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Equipamiento:</label>
+                    <textarea id="equipamientoAula" placeholder="Proyector, computadoras, pizarrón..."></textarea>
+                </div>
+            </div>
+            <button class="btn" onclick="agregarAula()">➕ Agregar Aula</button>
+            <table class="data-table" id="tablaAulas">
+                <thead>
+                    <tr>
+                        <th>Número</th>
+                        <th>Edificio</th>
+                        <th>Capacidad</th>
+                        <th>Tipo</th>
+                        <th>Equipamiento</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+
+        <!-- Checadores -->
+        <div id="checadores" class="section">
+            <h2>⏰ Gestión de Checadores</h2>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>ID del Checador:</label>
+                    <input type="text" id="idChecador" placeholder="Ej: CHK001">
+                </div>
+                <div class="form-group">
+                    <label>Maestro:</label>
+                    <select id="maestroChecador">
+                        <option value="">Seleccionar maestro...</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Fecha:</label>
+                    <input type="date" id="fechaChecador">
+                </div>
+                <div class="form-group">
+                    <label>Hora de Entrada:</label>
+                    <input type="time" id="horaEntrada">
+                </div>
+                <div class="form-group">
+                    <label>Hora de Salida:</label>
+                    <input type="time" id="horaSalida">
+                </div>
+                <div class="form-group">
+                    <label>Estado:</label>
+                    <select id="estadoChecador">
+                        <option value="">Seleccionar...</option>
+                        <option value="presente">Presente</option>
+                        <option value="tardanza">Tardanza</option>
+                        <option value="falta">Falta</option>
+                        <option value="justificado">Justificado</option>
+                    </select>
+                </div>
+            </div>
+            <button class="btn" onclick="agregarChecador()">➕ Registrar Asistencia</button>
+            <table class="data-table" id="tablaChecadores">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Maestro</th>
+                        <th>Fecha</th>
+                        <th>Entrada</th>
+                        <th>Salida</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+
+        <!-- Horarios -->
+        <div id="horarios" class="section">
+            <h2>📅 Gestión de Horarios</h2>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>Grupo:</label>
+                    <select id="grupoHorario">
+                        <option value="">Seleccionar grupo...</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Aula:</label>
+                    <select id="aulaHorario">
+                        <option value="">Seleccionar aula...</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Día de la Semana:</label>
+                    <select id="diaHorario">
+                        <option value="">Seleccionar...</option>
+                        <option value="lunes">Lunes</option>
+                        <option value="martes">Martes</option>
+                        <option value="miercoles">Miércoles</option>
+                        <option value="jueves">Jueves</option>
+                        <option value="viernes">Viernes</option>
+                        <option value="sabado">Sábado</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Hora de Inicio:</label>
+                    <input type="time" id="horaInicio">
+                </div>
+                <div class="form-group">
+                    <label>Hora de Fin:</label>
+                    <input type="time" id="horaFin">
+                </div>
+            </div>
+            <button class="btn" onclick="agregarHorario()">➕ Agregar Horario</button>
+            
+            <h3 style="margin: 30px 0 20px 0; color: #4a5568;">📋 Horario Semanal</h3>
+            <div class="schedule-grid" id="horarioSemanal">
+                <div class="schedule-header">Hora</div>
+                <div class="schedule-header">Lunes</div>
+                <div class="schedule-header">Martes</div>
+                <div class="schedule-header">Miércoles</div>
+                <div class="schedule-header">Jueves</div>
+                <div class="schedule-header">Viernes</div>
+                <div class="schedule-header">Sábado</div>
+                <div class="schedule-header">Domingo</div>
+            </div>
+
+            <table class="data-table" id="tablaHorarios">
+                <thead>
+                    <tr>
+                        <th>Grupo</th>
+                        <th>Materia</th>
+                        <th>Maestro</th>
+                        <th>Aula</th>
+                        <th>Día</th>
+                        <th>Hora</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Modal para editar -->
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2 id="modalTitle">Editar</h2>
+            <div id="modalContent"></div>
+            <button class="btn" onclick="guardarEdicion()">💾 Guardar Cambios</button>
+        </div>
+    </div>
+
+    <div id="alertContainer"></div>
+
+    <script>
+        // Datos en memoria
+        let data = {
+            materias: [],
+            maestros: [],
+            grupos: [],
+            aulas: [],
+            checadores: [],
+            horarios: []
+        };
+
+        let editingId = null;
+        let editingType = null;
+
+        // Inicialización
+        // Inicialización
+document.addEventListener('DOMContentLoaded', function() {
+    cargarDatos(); // Cambiamos cargarDatosPrueba() por cargarDatos()
+    
+    // Event listeners para el modal
+    document.querySelector('.close').onclick = cerrarModal;
+    window.onclick = function(event) {
+        if (event.target == document.getElementById('modal')) {
+            cerrarModal();
+        }
+    };
+});
+        // Navegación entre secciones
+        function showSection(sectionId) {
+    document.querySelectorAll('.section').forEach(section => {
+        section.classList.remove('active');
+    });
+    document.querySelectorAll('.nav-tab').forEach(tab => {
+        tab.classList.remove('active');
+    });
+    
+    document.getElementById(sectionId).classList.add('active');
+    
+    // Encontrar y activar el tab correspondiente
+    const tabs = document.querySelectorAll('.nav-tab');
+    tabs.forEach(tab => {
+        if (tab.textContent.toLowerCase().includes(sectionId.toLowerCase()) || 
+            (sectionId === 'dashboard' && tab.textContent === 'Dashboard')) {
+            tab.classList.add('active');
+        }
+    });
+
+    // Renderizar los datos correspondientes a la sección
+    switch(sectionId) {
+        case 'materias':
+            renderizarMaterias();
+            break;
+        case 'maestros':
+            renderizarMaestros();
+            break;
+        case 'grupos':
+            renderizarGrupos();
+            break;
+        case 'aulas':
+            renderizarAulas();
+            break;
+        case 'checadores':
+            renderizarChecadores();
+            break;
+        case 'horarios':
+            renderizarHorarios();
+            generarHorarioSemanal();
+            break;
+        case 'dashboard':
+            actualizarDashboard();
+            break;
+    }
+}
+
+        // Funciones de Materias
+        function agregarMateria() {
+            const codigo = document.getElementById('codigoMateria').value;
+            const nombre = document.getElementById('nombreMateria').value;
+            const creditos = document.getElementById('creditosMateria').value;
+            const semestre = document.getElementById('semestreMateria').value;
+
+            if (!codigo || !nombre || !creditos || !semestre) {
+                mostrarAlerta('Por favor complete todos los campos', 'error');
+                return;
+            }
+
+            const materia = {
+                id: Date.now(),
+                codigo,
+                nombre,
+                creditos: parseInt(creditos),
+                semestre
+            };
+
+            data.materias.push(materia);
+            renderizarMaterias();
+            limpiarFormularioMateria();
+            actualizarDashboard();
+            actualizarSelectores();
+            mostrarAlerta('Materia agregada exitosamente', 'success');
+        }
+
+        function renderizarMaterias() {
+            const tbody = document.querySelector('#tablaMaterias tbody');
+            tbody.innerHTML = '';
+
+            data.materias.forEach(materia => {
+                const row = tbody.insertRow();
+                row.innerHTML = `
+                    <td>${materia.codigo}</td>
+                    <td>${materia.nombre}</td>
+                    <td>${materia.creditos}</td>
+                    <td>${materia.semestre}° Semestre</td>
+                    <td>
+                        <button class="btn" onclick="editarMateria(${materia.id})" style="margin-right: 5px;">✏️ Editar</button>
+                        <button class="btn btn-danger" onclick="eliminarMateria(${materia.id})">🗑️ Eliminar</button>
+                    </td>
+                `;
+            });
+        }
+
+        function limpiarFormularioMateria() {
+            document.getElementById('codigoMateria').value = '';
+            document.getElementById('nombreMateria').value = '';
+            document.getElementById('creditosMateria').value = '';
+            document.getElementById('semestreMateria').value = '';
+        }
+
+        function editarMateria(id) {
+            const materia = data.materias.find(m => m.id === id);
+            if (!materia) return;
+
+            editingId = id;
+            editingType = 'materia';
+
+            const modalContent = `
+                <div class="form-group">
+                    <label>Código de Materia:</label>
+                    <input type="text" id="editCodigoMateria" value="${materia.codigo}">
+                </div>
+                <div class="form-group">
+                    <label>Nombre de la Materia:</label>
+                    <input type="text" id="editNombreMateria" value="${materia.nombre}">
+                </div>
+                <div class="form-group">
+                    <label>Créditos:</label>
+                    <input type="number" id="editCreditosMateria" value="${materia.creditos}">
+                </div>
+                <div class="form-group">
+                    <label>Semestre:</label>
+                    <select id="editSemestreMateria">
+                        <option value="1" ${materia.semestre == 1 ? 'selected' : ''}>1° Semestre</option>
+                        <option value="2" ${materia.semestre == 2 ? 'selected' : ''}>2° Semestre</option>
+                        <option value="3" ${materia.semestre == 3 ? 'selected' : ''}>3° Semestre</option>
+                        <option value="4" ${materia.semestre == 4 ? 'selected' : ''}>4° Semestre</option>
+                        <option value="5" ${materia.semestre == 5 ? 'selected' : ''}>5° Semestre</option>
+                        <option value="6" ${materia.semestre == 6 ? 'selected' : ''}>6° Semestre</option>
+                        <option value="7" ${materia.semestre == 7 ? 'selected' : ''}>7° Semestre</option>
+                        <option value="8" ${materia.semestre == 8 ? 'selected' : ''}>8° Semestre</option>
+                    </select>
+                </div>
+            `;
+
+            document.getElementById('modalTitle').textContent = 'Editar Materia';
+            document.getElementById('modalContent').innerHTML = modalContent;
+            document.getElementById('modal').style.display = 'block';
+        }
+
+        function eliminarMateria(id) {
+            if (confirm('¿Está seguro de que desea eliminar esta materia?')) {
+                data.materias = data.materias.filter(m => m.id !== id);
+                renderizarMaterias();
+                actualizarDashboard();
+                actualizarSelectores();
+                mostrarAlerta('Materia eliminada exitosamente', 'success');
+            }
+        }
+
+        // Funciones de Maestros
+        function agregarMaestro() {
+            const id = document.getElementById('idMaestro').value;
+            const nombre = document.getElementById('nombreMaestro').value;
+            const email = document.getElementById('emailMaestro').value;
+            const telefono = document.getElementById('telefonoMaestro').value;
+            const especialidad = document.getElementById('especialidadMaestro').value;
+            const tipoContrato = document.getElementById('tipoContrato').value;
+
+            if (!id || !nombre || !email || !especialidad || !tipoContrato) {
+                mostrarAlerta('Por favor complete todos los campos obligatorios', 'error');
+                return;
+            }
+
+            const maestro = {
+                id: Date.now(),
+                idMaestro: id,
+                nombre,
+                email,
+                telefono,
+                especialidad,
+                tipoContrato
+            };
+
+            data.maestros.push(maestro);
+            renderizarMaestros();
+            limpiarFormularioMaestro();
+            actualizarDashboard();
+            actualizarSelectores();
+            mostrarAlerta('Maestro agregado exitosamente', 'success');
+
+            guardarDatos();
+        }
+
+        function renderizarMaestros() {
+            const tbody = document.querySelector('#tablaMaestros tbody');
+            tbody.innerHTML = '';
+
+            data.maestros.forEach(maestro => {
+                const row = tbody.insertRow();
+                row.innerHTML = `
+                    <td>${maestro.idMaestro}</td>
+                    <td>${maestro.nombre}</td>
+                    <td>${maestro.email}</td>
+                    <td>${maestro.especialidad}</td>
+                    <td>${maestro.tipoContrato}</td>
+                    <td>
+                        <button class="btn" onclick="editarMaestro(${maestro.id})" style="margin-right: 5px;">✏️ Editar</button>
+                        <button class="btn btn-danger" onclick="eliminarMaestro(${maestro.id})">🗑️ Eliminar</button>
+                    </td>
+                `;
+            });
+        }
+
+        function limpiarFormularioMaestro() {
+            document.getElementById('idMaestro').value = '';
+            document.getElementById('nombreMaestro').value = '';
+            document.getElementById('emailMaestro').value = '';
+            document.getElementById('telefonoMaestro').value = '';
+            document.getElementById('especialidadMaestro').value = '';
+            document.getElementById('tipoContrato').value = '';
+        }
+
+        function editarMaestro(id) {
+            const maestro = data.maestros.find(m => m.id === id);
+            if (!maestro) return;
+
+            editingId = id;
+            editingType = 'maestro';
+
+            const modalContent = `
+                <div class="form-group">
+                    <label>ID del Maestro:</label>
+                    <input type="text" id="editIdMaestro" value="${maestro.idMaestro}">
+                </div>
+                <div class="form-group">
+                    <label>Nombre Completo:</label>
+                    <input type="text" id="editNombreMaestro" value="${maestro.nombre}">
+                </div>
+                <div class="form-group">
+                    <label>Email:</label>
+                    <input type="email" id="editEmailMaestro" value="${maestro.email}">
+                </div>
+                <div class="form-group">
+                    <label>Teléfono:</label>
+                    <input type="tel" id="editTelefonoMaestro" value="${maestro.telefono || ''}">
+                </div>
+                <div class="form-group">
+                    <label>Especialidad:</label>
+                    <input type="text" id="editEspecialidadMaestro" value="${maestro.especialidad}">
+                </div>
+                <div class="form-group">
+                    <label>Tipo de Contrato:</label>
+                    <select id="editTipoContrato">
+                        <option value="tiempo-completo" ${maestro.tipoContrato === 'tiempo-completo' ? 'selected' : ''}>Tiempo Completo</option>
+                        <option value="asignatura" ${maestro.tipoContrato === 'asignatura' ? 'selected' : ''}>Por Asignatura</option>
+                        <option value="medio-tiempo" ${maestro.tipoContrato === 'medio-tiempo' ? 'selected' : ''}>Medio Tiempo</option>
+                    </select>
+                </div>
+            `;
+
+            document.getElementById('modalTitle').textContent = 'Editar Maestro';
+            document.getElementById('modalContent').innerHTML = modalContent;
+            document.getElementById('modal').style.display = 'block';
+        }
+
+        function eliminarMaestro(id) {
+            if (confirm('¿Está seguro de que desea eliminar este maestro?')) {
+                data.maestros = data.maestros.filter(m => m.id !== id);
+                renderizarMaestros();
+                actualizarDashboard();
+                actualizarSelectores();
+                mostrarAlerta('Maestro eliminado exitosamente', 'success');
+            }
+        }
+
+        // Funciones de Grupos
+        function agregarGrupo() {
+            const id = document.getElementById('idGrupo').value;
+            const materiaId = document.getElementById('materiaGrupo').value;
+            const maestroId = document.getElementById('maestroGrupo').value;
+            const jefeGrupo = document.getElementById('jefeGrupo').value;
+            const capacidad = document.getElementById('capacidadGrupo').value;
+            const periodo = document.getElementById('periodoGrupo').value;
+
+            if (!id || !materiaId || !maestroId || !capacidad || !periodo) {
+                mostrarAlerta('Por favor complete todos los campos obligatorios', 'error');
+                return;
+            }
+
+            const grupo = {
+                id: Date.now(),
+                idGrupo: id,
+                materiaId: parseInt(materiaId),
+                maestroId: parseInt(maestroId),
+                jefeGrupo,
+                capacidad: parseInt(capacidad),
+                periodo
+            };
+
+            data.grupos.push(grupo);
+            renderizarGrupos();
+            limpiarFormularioGrupo();
+            actualizarDashboard();
+            actualizarSelectores();
+            mostrarAlerta('Grupo agregado exitosamente', 'success');
+        }
+
+        function renderizarGrupos() {
+            const tbody = document.querySelector('#tablaGrupos tbody');
+            tbody.innerHTML = '';
+
+            data.grupos.forEach(grupo => {
+                const materia = data.materias.find(m => m.id === grupo.materiaId);
+                const maestro = data.maestros.find(m => m.id === grupo.maestroId);
+                
+                const row = tbody.insertRow();
+                row.innerHTML = `
+                    <td>${grupo.idGrupo}</td>
+                    <td>${materia ? materia.nombre : 'N/A'}</td>
+                    <td>${maestro ? maestro.nombre : 'N/A'}</td>
+                    <td>${grupo.jefeGrupo || 'No asignado'}</td>
+                    <td>${grupo.capacidad}</td>
+                    <td>${grupo.periodo}</td>
+                    <td>
+                        <button class="btn" onclick="editarGrupo(${grupo.id})" style="margin-right: 5px;">✏️ Editar</button>
+                        <button class="btn btn-danger" onclick="eliminarGrupo(${grupo.id})">🗑️ Eliminar</button>
+                    </td>
+                `;
+            });
+        }
+
+        function limpiarFormularioGrupo() {
+            document.getElementById('idGrupo').value = '';
+            document.getElementById('materiaGrupo').value = '';
+            document.getElementById('maestroGrupo').value = '';
+            document.getElementById('jefeGrupo').value = '';
+            document.getElementById('capacidadGrupo').value = '';
+            document.getElementById('periodoGrupo').value = '';
+        }
+
+        function eliminarGrupo(id) {
+            if (confirm('¿Está seguro de que desea eliminar este grupo?')) {
+                data.grupos = data.grupos.filter(g => g.id !== id);
+                renderizarGrupos();
+                actualizarDashboard();
+                actualizarSelectores();
+                mostrarAlerta('Grupo eliminado exitosamente', 'success');
+                
+                guardarDatos();
+            }
+        }
+
+        // Funciones de Aulas
+        function agregarAula() {
+            const numero = document.getElementById('numeroAula').value;
+            const edificio = document.getElementById('edificioAula').value;
+            const capacidad = document.getElementById('capacidadAula').value;
+            const tipo = document.getElementById('tipoAula').value;
+            const equipamiento = document.getElementById('equipamientoAula').value;
+
+            if (!numero || !edificio || !capacidad || !tipo) {
+                mostrarAlerta('Por favor complete todos los campos obligatorios', 'error');
+                return;
+            }
+
+            const aula = {
+                id: Date.now(),
+                numero,
+                edificio,
+                capacidad: parseInt(capacidad),
+                tipo,
+                equipamiento
+            };
+
+            data.aulas.push(aula);
+            renderizarAulas();
+            limpiarFormularioAula();
+            actualizarDashboard();
+            actualizarSelectores();
+            mostrarAlerta('Aula agregada exitosamente', 'success');
+        }
+
+        function renderizarAulas() {
+            const tbody = document.querySelector('#tablaAulas tbody');
+            tbody.innerHTML = '';
+
+            data.aulas.forEach(aula => {
+                const row = tbody.insertRow();
+                row.innerHTML = `
+                    <td>${aula.numero}</td>
+                    <td>${aula.edificio}</td>
+                    <td>${aula.capacidad}</td>
+                    <td>${aula.tipo}</td>
+                    <td>${aula.equipamiento || 'No especificado'}</td>
+                    <td>
+                        <button class="btn" onclick="editarAula(${aula.id})" style="margin-right: 5px;">✏️ Editar</button>
+                        <button class="btn btn-danger" onclick="eliminarAula(${aula.id})">🗑️ Eliminar</button>
+                    </td>
+                `;
+            });
+        }
+
+        function limpiarFormularioAula() {
+            document.getElementById('numeroAula').value = '';
+            document.getElementById('edificioAula').value = '';
+            document.getElementById('capacidadAula').value = '';
+            document.getElementById('tipoAula').value = '';
+            document.getElementById('equipamientoAula').value = '';
+        }
+
+        function eliminarAula(id) {
+            if (confirm('¿Está seguro de que desea eliminar esta aula?')) {
+                data.aulas = data.aulas.filter(a => a.id !== id);
+                renderizarAulas();
+                actualizarDashboard();
+                actualizarSelectores();
+                mostrarAlerta('Aula eliminada exitosamente', 'success');
+            }
+        }
+
+        // Funciones de Checadores
+        function agregarChecador() {
+            const id = document.getElementById('idChecador').value;
+            const maestroId = document.getElementById('maestroChecador').value;
+            const fecha = document.getElementById('fechaChecador').value;
+            const horaEntrada = document.getElementById('horaEntrada').value;
+            const horaSalida = document.getElementById('horaSalida').value;
+            const estado = document.getElementById('estadoChecador').value;
+
+            if (!id || !maestroId || !fecha || !estado) {
+                mostrarAlerta('Por favor complete todos los campos obligatorios', 'error');
+                return;
+            }
+
+            const checador = {
+                id: Date.now(),
+                idChecador: id,
+                maestroId: parseInt(maestroId),
+                fecha,
+                horaEntrada,
+                horaSalida,
+                estado
+            };
+
+            data.checadores.push(checador);
+            renderizarChecadores();
+            limpiarFormularioChecador();
+            actualizarDashboard();
+            mostrarAlerta('Registro de asistencia agregado exitosamente', 'success');
+        }
+
+        function renderizarChecadores() {
+            const tbody = document.querySelector('#tablaChecadores tbody');
+            tbody.innerHTML = '';
+
+            data.checadores.forEach(checador => {
+                const maestro = data.maestros.find(m => m.id === checador.maestroId);
+                
+                const row = tbody.insertRow();
+                row.innerHTML = `
+                    <td>${checador.idChecador}</td>
+                    <td>${maestro ? maestro.nombre : 'N/A'}</td>
+                    <td>${checador.fecha}</td>
+                    <td>${checador.horaEntrada || 'N/A'}</td>
+                    <td>${checador.horaSalida || 'N/A'}</td>
+                    <td><span style="padding: 5px 10px; border-radius: 15px; font-size: 12px; font-weight: bold; 
+                        background: ${getEstadoColor(checador.estado)}; color: white;">${checador.estado}</span></td>
+                    <td>
+                        <button class="btn btn-danger" onclick="eliminarChecador(${checador.id})">🗑️ Eliminar</button>
+                    </td>
+                `;
+            });
+        }
+
+        function getEstadoColor(estado) {
+            switch(estado) {
+                case 'presente': return '#48bb78';
+                case 'tardanza': return '#ed8936';
+                case 'falta': return '#f56565';
+                case 'justificado': return '#4299e1';
+                default: return '#718096';
+            }
+        }
+
+        function limpiarFormularioChecador() {
+            document.getElementById('idChecador').value = '';
+            document.getElementById('maestroChecador').value = '';
+            document.getElementById('fechaChecador').value = '';
+            document.getElementById('horaEntrada').value = '';
+            document.getElementById('horaSalida').value = '';
+            document.getElementById('estadoChecador').value = '';
+        }
+
+        function eliminarChecador(id) {
+            if (confirm('¿Está seguro de que desea eliminar este registro?')) {
+                data.checadores = data.checadores.filter(c => c.id !== id);
+                renderizarChecadores();
+                actualizarDashboard();
+                mostrarAlerta('Registro eliminado exitosamente', 'success');
+            }
+        }
+
+        // Funciones de Horarios
+        function agregarHorario() {
+            const grupoId = document.getElementById('grupoHorario').value;
+            const aulaId = document.getElementById('aulaHorario').value;
+            const dia = document.getElementById('diaHorario').value;
+            const horaInicio = document.getElementById('horaInicio').value;
+            const horaFin = document.getElementById('horaFin').value;
+
+            if (!grupoId || !aulaId || !dia || !horaInicio || !horaFin) {
+                mostrarAlerta('Por favor complete todos los campos', 'error');
+                return;
+            }
+
+            const horario = {
+                id: Date.now(),
+                grupoId: parseInt(grupoId),
+                aulaId: parseInt(aulaId),
+                dia,
+                horaInicio,
+                horaFin
+            };
+
+            data.horarios.push(horario);
+            renderizarHorarios();
+            generarHorarioSemanal();
+            limpiarFormularioHorario();
+            actualizarDashboard();
+            mostrarAlerta('Horario agregado exitosamente', 'success');
+        }
+
+        function renderizarHorarios() {
+            const tbody = document.querySelector('#tablaHorarios tbody');
+            tbody.innerHTML = '';
+
+            data.horarios.forEach(horario => {
+                const grupo = data.grupos.find(g => g.id === horario.grupoId);
+                const aula = data.aulas.find(a => a.id === horario.aulaId);
+                const materia = grupo ? data.materias.find(m => m.id === grupo.materiaId) : null;
+                const maestro = grupo ? data.maestros.find(m => m.id === grupo.maestroId) : null;
+                
+                const row = tbody.insertRow();
+                row.innerHTML = `
+                    <td>${grupo ? grupo.idGrupo : 'N/A'}</td>
+                    <td>${materia ? materia.nombre : 'N/A'}</td>
+                    <td>${maestro ? maestro.nombre : 'N/A'}</td>
+                    <td>${aula ? aula.numero : 'N/A'}</td>
+                    <td>${horario.dia}</td>
+                    <td>${horario.horaInicio} - ${horario.horaFin}</td>
+                    <td>
+                        <button class="btn btn-danger" onclick="eliminarHorario(${horario.id})">🗑️ Eliminar</button>
+                    </td>
+                `;
+            });
+        }
+
+        function limpiarFormularioHorario() {
+            document.getElementById('grupoHorario').value = '';
+            document.getElementById('aulaHorario').value = '';
+            document.getElementById('diaHorario').value = '';
+            document.getElementById('horaInicio').value = '';
+            document.getElementById('horaFin').value = '';
+        }
+
+        function eliminarHorario(id) {
+            if (confirm('¿Está seguro de que desea eliminar este horario?')) {
+                data.horarios = data.horarios.filter(h => h.id !== id);
+                renderizarHorarios();
+                generarHorarioSemanal();
+                actualizarDashboard();
+                mostrarAlerta('Horario eliminado exitosamente', 'success');
+            }
+        }
+
+        function generarHorarioSemanal() {
+            const container = document.getElementById('horarioSemanal');
+            // Mantener solo los headers
+            const headers = container.querySelectorAll('.schedule-header');
+            container.innerHTML = '';
+            headers.forEach(header => container.appendChild(header));
+
+            const horas = ['07:00', '08:00', '09:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00'];
+            const dias = ['lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sabado', 'domingo'];
+
+            horas.forEach(hora => {
+                // Celda de hora
+                const horaCell = document.createElement('div');
+                horaCell.className = 'schedule-header';
+                horaCell.textContent = hora;
+                container.appendChild(horaCell);
+
+                // Celdas para cada día
+                dias.forEach(dia => {
+                    const cell = document.createElement('div');
+                    cell.className = 'schedule-cell';
+                    
+                    // Buscar si hay algún horario para esta hora y día
+                    const horario = data.horarios.find(h => {
+                        return h.dia === dia && 
+                               h.horaInicio <= hora && 
+                               h.horaFin > hora;
+                    });
+
+                    if (horario) {
+                        const grupo = data.grupos.find(g => g.id === horario.grupoId);
+                        const materia = grupo ? data.materias.find(m => m.id === grupo.materiaId) : null;
+                        const aula = data.aulas.find(a => a.id === horario.aulaId);
+                        
+                        cell.classList.add('occupied');
+                        cell.innerHTML = `
+                            <div style="font-weight: bold;">${grupo ? grupo.idGrupo : 'N/A'}</div>
+                            <div style="font-size: 10px;">${materia ? materia.codigo : 'N/A'}</div>
+                            <div style="font-size: 10px;">${aula ? aula.numero : 'N/A'}</div>
+                        `;
+                    }
+                    
+                    container.appendChild(cell);
+                });
+            });
+        }
+
+        // Funciones auxiliares
+        function actualizarDashboard() {
+            document.getElementById('totalMaterias').textContent = data.materias.length;
+            document.getElementById('totalMaestros').textContent = data.maestros.length;
+            document.getElementById('totalGrupos').textContent = data.grupos.length;
+            document.getElementById('totalAulas').textContent = data.aulas.length;
+            document.getElementById('totalChecadores').textContent = data.checadores.length;
+            document.getElementById('totalHorarios').textContent = data.horarios.length;
+        }
+
+        function actualizarSelectores() {
+            // Actualizar selector de materias en grupos
+            const materiaSelect = document.getElementById('materiaGrupo');
+            materiaSelect.innerHTML = '<option value="">Seleccionar materia...</option>';
+            data.materias.forEach(materia => {
+                materiaSelect.innerHTML += `<option value="${materia.id}">${materia.codigo} - ${materia.nombre}</option>`;
+            });
+
+            // Actualizar selector de maestros en grupos
+            const maestroGrupoSelect = document.getElementById('maestroGrupo');
+            maestroGrupoSelect.innerHTML = '<option value="">Seleccionar maestro...</option>';
+            data.maestros.forEach(maestro => {
+                maestroGrupoSelect.innerHTML += `<option value="${maestro.id}">${maestro.nombre}</option>`;
+            });
+
+            // Actualizar selector de maestros en checadores
+            const maestroChecadorSelect = document.getElementById('maestroChecador');
+            maestroChecadorSelect.innerHTML = '<option value="">Seleccionar maestro...</option>';
+            data.maestros.forEach(maestro => {
+                maestroChecadorSelect.innerHTML += `<option value="${maestro.id}">${maestro.nombre}</option>`;
+            });
+
+            // Actualizar selector de grupos en horarios
+            const grupoHorarioSelect = document.getElementById('grupoHorario');
+            grupoHorarioSelect.innerHTML = '<option value="">Seleccionar grupo...</option>';
+            data.grupos.forEach(grupo => {
+                const materia = data.materias.find(m => m.id === grupo.materiaId);
+                grupoHorarioSelect.innerHTML += `<option value="${grupo.id}">${grupo.idGrupo} - ${materia ? materia.nombre : 'N/A'}</option>`;
+            });
+
+            // Actualizar selector de aulas en horarios
+            const aulaHorarioSelect = document.getElementById('aulaHorario');
+            aulaHorarioSelect.innerHTML = '<option value="">Seleccionar aula...</option>';
+            data.aulas.forEach(aula => {
+                aulaHorarioSelect.innerHTML += `<option value="${aula.id}">${aula.numero} - ${aula.edificio}</option>`;
+            });
+        }
+
+        function mostrarAlerta(mensaje, tipo) {
+            const alertContainer = document.getElementById('alertContainer');
+            const alert = document.createElement('div');
+            alert.className = `alert alert-${tipo}`;
+            alert.innerHTML = `
+                ${mensaje}
+                <button onclick="this.parentElement.remove()" style="float: right; background: none; border: none; font-size: 20px; cursor: pointer;">&times;</button>
+            `;
+            
+            alertContainer.appendChild(alert);
+            
+            setTimeout(() => {
+                if (alert.parentElement) {
+                    alert.remove();
+                }
+            }, 5000);
+        }
+
+        // Funciones del modal
+        function cerrarModal() {
+            document.getElementById('modal').style.display = 'none';
+            editingId = null;
+            editingType = null;
+        }
+
+        function guardarEdicion() {
+            if (!editingId || !editingType) return;
+
+            switch(editingType) {
+                case 'materia':
+                    guardarEdicionMateria();
+                    break;
+                case 'maestro':
+                    guardarEdicionMaestro();
+                    break;
+                // Agregar más casos según sea necesario
+            }
+        }
+
+        function guardarEdicionMateria() {
+            const materia = data.materias.find(m => m.id === editingId);
+            if (!materia) return;
+
+            materia.codigo = document.getElementById('editCodigoMateria').value;
+            materia.nombre = document.getElementById('editNombreMateria').value;
+            materia.creditos = parseInt(document.getElementById('editCreditosMateria').value);
+            materia.semestre = document.getElementById('editSemestreMateria').value;
+
+            renderizarMaterias();
+            actualizarSelectores();
+            cerrarModal();
+            mostrarAlerta('Materia actualizada exitosamente', 'success');
+        }
+
+        function guardarEdicionMaestro() {
+            const maestro = data.maestros.find(m => m.id === editingId);
+            if (!maestro) return;
+
+            maestro.idMaestro = document.getElementById('editIdMaestro').value;
+            maestro.nombre = document.getElementById('editNombreMaestro').value;
+            maestro.email = document.getElementById('editEmailMaestro').value;
+            maestro.telefono = document.getElementById('editTelefonoMaestro').value;
+            maestro.especialidad = document.getElementById('editEspecialidadMaestro').value;
+            maestro.tipoContrato = document.getElementById('editTipoContrato').value;
+
+            renderizarMaestros();
+            actualizarSelectores();
+            cerrarModal();
+            mostrarAlerta('Maestro actualizado exitosamente', 'success');
+        }
+
+        // Datos de prueba
+        // Datos de prueba
+function cargarDatosPrueba() {
+    // Materias de prueba
+    data.materias = [
+        { id: 1, codigo: '1', nombre: 'Optativa 1: Redes Neuronales y Lógica Difusa', creditos: 6, semestre: '8' },
+        { id: 2, codigo: '2', nombre: 'Innovación de Procesos con NTIC', creditos: 6, semestre: '8' },
+        { id: 3, codigo: '3', nombre: 'Graficación con Laboratorio', creditos: 6, semestre: '8' },
+        { id: 4, codigo: '4', nombre: 'Computación Ubicua Con Laboratorio', creditos: 4, semestre: '8' },
+        { id: 5, codigo: '5', nombre: 'Sistemas Distribuidos Con Laboratorio', creditos: 6, semestre: '8' }
+    ];
+
+    // Maestros de prueba
+    data.maestros = [
+        { id: 1, idMaestro: 'M001', nombre: 'Pérez Contreras Edgar Omar', email: 'juan.perez@universidad.edu', telefono: '555-123-4567', especialidad: 'Matemáticas', tipoContrato: 'tiempo-completo' },
+        { id: 2, idMaestro: 'M002', nombre: 'José Miguel Mendivil Torres', email: 'maria.lopez@universidad.edu', telefono: '555-234-5678', especialidad: 'Programación', tipoContrato: 'tiempo-completo' },
+        { id: 3, idMaestro: 'M003', nombre: 'Herman Geovany Inzunza Martínez', email: 'carlos.ramirez@universidad.edu', telefono: '555-345-6789', especialidad: 'Programación', tipoContrato: 'tiempo-completo' },
+        { id: 4, idMaestro: 'M004', nombre: 'Mirza Paolo Inzunza Martínez', email: 'carlos.ramirez@universidad.edu', telefono: '555-345-6789', especialidad: 'Programación', tipoContrato: 'tiempo-completo' },
+        { id: 5, idMaestro: 'M005', nombre: 'Rocío Jaqueline Becerra Urquidez', email: 'carlos.ramirez@universidad.edu', telefono: '555-345-6789', especialidad: 'Programación', tipoContrato: 'tiempo-completo' }
+    ];
+
+    // Aulas de prueba
+    data.aulas = [
+        { id: 1, numero: 'Aula 1', edificio: 'Edificio B1', capacidad: 60, tipo: 'teorica', equipamiento: 'Proyector, pizarrón' },
+        { id: 2, numero: 'Aula 2', edificio: 'Edificio B1', capacidad: 60, tipo: 'teorica', equipamiento: 'Pizarrón' },
+        { id: 3, numero: 'Aula 3', edificio: 'Edificio B1', capacidad: 60, tipo: 'teorica', equipamiento: 'Pizarrón' }
+    ];
+
+    // Grupos de prueba
+    data.grupos = [
+        { id: 1, idGrupo: 'Aula 20', materiaId: 1, maestroId: 1, jefeGrupo: 'Cabanillas', capacidad: 60, periodo: '2021-2025' },
+        { id: 2, idGrupo: 'Aula 20', materiaId: 2, maestroId: 2, jefeGrupo: 'Cabanillas', capacidad: 60, periodo: '2021-2025' },
+        { id: 1, idGrupo: 'Aula 20', materiaId: 1, maestroId: 1, jefeGrupo: 'Cabanillas', capacidad: 60, periodo: '2021-2025' },
+        { id: 2, idGrupo: 'Aula 20', materiaId: 2, maestroId: 2, jefeGrupo: 'Cabanillas', capacidad: 60, periodo: '2021-2025' },
+        { id: 2, idGrupo: 'Aula 20', materiaId: 2, maestroId: 2, jefeGrupo: 'Cabanillas', capacidad: 60, periodo: '2021-2025' }
+    ];
+
+    // Checadores de prueba
+    data.checadores = [
+        { id: 1, idChecador: 'CHK001', maestroId: 1, fecha: '2025-01-15', horaEntrada: '08:00', horaSalida: '12:00', estado: 'presente' },
+        { id: 2, idChecador: 'CHK002', maestroId: 2, fecha: '2025-01-15', horaEntrada: '08:15', horaSalida: '11:45', estado: 'tardanza' },
+        { id: 3, idChecador: 'CHK003', maestroId: 3, fecha: '2025-01-16', horaEntrada: '', horaSalida: '', estado: 'falta' }
+    ];
+
+    // Horarios de prueba
+    data.horarios = [
+        { id: 1, grupoId: 1, aulaId: 1, dia: 'lunes', horaInicio: '07:00', horaFin: '09:00' },
+        { id: 2, grupoId: 1, aulaId: 1, dia: 'miercoles', horaInicio: '07:00', horaFin: '09:00' },
+        { id: 3, grupoId: 2, aulaId: 2, dia: 'martes', horaInicio: '09:00', horaFin: '11:00' },
+        { id: 4, grupoId: 2, aulaId: 2, dia: 'jueves', horaInicio: '09:00', horaFin: '11:00' },
+        { id: 5, grupoId: 3, aulaId: 3, dia: 'lunes', horaInicio: '11:00', horaFin: '13:00' },
+        { id: 6, grupoId: 3, aulaId: 3, dia: 'viernes', horaInicio: '11:00', horaFin: '13:00' }
+    ];
+
+    // Renderizar todos los datos inicialmente
+    renderizarMaterias();
+    renderizarMaestros();
+    renderizarGrupos();
+    renderizarAulas();
+    renderizarChecadores();
+    renderizarHorarios();
+    generarHorarioSemanal();
+    actualizarDashboard();
+    actualizarSelectores();
+}
+
+        // Función para editar grupo
+        function editarGrupo(id) {
+            const grupo = data.grupos.find(g => g.id === id);
+            if (!grupo) return;
+
+            editingId = id;
+            editingType = 'grupo';
+
+            // Obtener opciones de materias y maestros
+            let materiasOptions = '';
+            data.materias.forEach(materia => {
+                materiasOptions += `<option value="${materia.id}" ${grupo.materiaId === materia.id ? 'selected' : ''}>${materia.codigo} - ${materia.nombre}</option>`;
+            });
+
+            let maestrosOptions = '';
+            data.maestros.forEach(maestro => {
+                maestrosOptions += `<option value="${maestro.id}" ${grupo.maestroId === maestro.id ? 'selected' : ''}>${maestro.nombre}</option>`;
+            });
+
+            const modalContent = `
+                <div class="form-group">
+                    <label>ID del Grupo:</label>
+                    <input type="text" id="editIdGrupo" value="${grupo.idGrupo}">
+                </div>
+                <div class="form-group">
+                    <label>Materia:</label>
+                    <select id="editMateriaGrupo">
+                        <option value="">Seleccionar materia...</option>
+                        ${materiasOptions}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Maestro:</label>
+                    <select id="editMaestroGrupo">
+                        <option value="">Seleccionar maestro...</option>
+                        ${maestrosOptions}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Jefe de Grupo:</label>
+                    <input type="text" id="editJefeGrupo" value="${grupo.jefeGrupo || ''}">
+                </div>
+                <div class="form-group">
+                    <label>Capacidad Máxima:</label>
+                    <input type="number" id="editCapacidadGrupo" value="${grupo.capacidad}">
+                </div>
+                <div class="form-group">
+                    <label>Período:</label>
+                    <select id="editPeriodoGrupo">
+                        <option value="2025-1" ${grupo.periodo === '2025-1' ? 'selected' : ''}>2025-1</option>
+                        <option value="2025-2" ${grupo.periodo === '2025-2' ? 'selected' : ''}>2025-2</option>
+                        <option value="2025-3" ${grupo.periodo === '2025-3' ? 'selected' : ''}>2025-3</option>
+                    </select>
+                </div>
+            `;
+
+            document.getElementById('modalTitle').textContent = 'Editar Grupo';
+            document.getElementById('modalContent').innerHTML = modalContent;
+            document.getElementById('modal').style.display = 'block';
+        }
+
+        function guardarEdicionGrupo() {
+            const grupo = data.grupos.find(g => g.id === editingId);
+            if (!grupo) return;
+
+            grupo.idGrupo = document.getElementById('editIdGrupo').value;
+            grupo.materiaId = parseInt(document.getElementById('editMateriaGrupo').value);
+            grupo.maestroId = parseInt(document.getElementById('editMaestroGrupo').value);
+            grupo.jefeGrupo = document.getElementById('editJefeGrupo').value;
+            grupo.capacidad = parseInt(document.getElementById('editCapacidadGrupo').value);
+            grupo.periodo = document.getElementById('editPeriodoGrupo').value;
+
+            renderizarGrupos();
+            actualizarSelectores();
+            cerrarModal();
+            mostrarAlerta('Grupo actualizado exitosamente', 'success');
+            guardarDatos();
+        }
+
+        // Función para editar aula
+        function editarAula(id) {
+            const aula = data.aulas.find(a => a.id === id);
+            if (!aula) return;
+
+            editingId = id;
+            editingType = 'aula';
+
+            const modalContent = `
+                <div class="form-group">
+                    <label>Número de Aula:</label>
+                    <input type="text" id="editNumeroAula" value="${aula.numero}">
+                </div>
+                <div class="form-group">
+                    <label>Edificio:</label>
+                    <input type="text" id="editEdificioAula" value="${aula.edificio}">
+                </div>
+                <div class="form-group">
+                    <label>Capacidad:</label>
+                    <input type="number" id="editCapacidadAula" value="${aula.capacidad}">
+                </div>
+                <div class="form-group">
+                    <label>Tipo de Aula:</label>
+                    <select id="editTipoAula">
+                        <option value="teorica" ${aula.tipo === 'teorica' ? 'selected' : ''}>Teórica</option>
+                        <option value="laboratorio" ${aula.tipo === 'laboratorio' ? 'selected' : ''}>Laboratorio</option>
+                        <option value="taller" ${aula.tipo === 'taller' ? 'selected' : ''}>Taller</option>
+                        <option value="auditorio" ${aula.tipo === 'auditorio' ? 'selected' : ''}>Auditorio</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Equipamiento:</label>
+                    <textarea id="editEquipamientoAula">${aula.equipamiento || ''}</textarea>
+                </div>
+            `;
+
+            document.getElementById('modalTitle').textContent = 'Editar Aula';
+            document.getElementById('modalContent').innerHTML = modalContent;
+            document.getElementById('modal').style.display = 'block';
+        }
+
+        function guardarEdicionAula() {
+            const aula = data.aulas.find(a => a.id === editingId);
+            if (!aula) return;
+
+            aula.numero = document.getElementById('editNumeroAula').value;
+            aula.edificio = document.getElementById('editEdificioAula').value;
+            aula.capacidad = parseInt(document.getElementById('editCapacidadAula').value);
+            aula.tipo = document.getElementById('editTipoAula').value;
+            aula.equipamiento = document.getElementById('editEquipamientoAula').value;
+
+            renderizarAulas();
+            actualizarSelectores();
+            cerrarModal();
+            mostrarAlerta('Aula actualizada exitosamente', 'success');
+        }
+
+        // Actualizar la función guardarEdicion para incluir los nuevos tipos
+        function guardarEdicion() {
+            if (!editingId || !editingType) return;
+
+            switch(editingType) {
+                case 'materia':
+                    guardarEdicionMateria();
+                    break;
+                case 'maestro':
+                    guardarEdicionMaestro();
+                    break;
+                case 'grupo':
+                    guardarEdicionGrupo();
+                    break;
+                case 'aula':
+                    guardarEdicionAula();
+                    break;
+                default:
+                    console.error('Tipo de edición no reconocido:', editingType);
+            }
+        }
+
+        function guardarDatos() {
+            localStorage.setItem('sistemaAdministracionData', JSON.stringify(data));
+        }
+
+        function cargarDatos() {
+    const datosGuardados = localStorage.getItem('sistemaAdministracionData');
+    if (datosGuardados) {
+        data = JSON.parse(datosGuardados);
+        // Asegurarnos de que los arrays existen
+        data.materias = data.materias || [];
+        data.maestros = data.maestros || [];
+        data.grupos = data.grupos || [];
+        data.aulas = data.aulas || [];
+        data.checadores = data.checadores || [];
+        data.horarios = data.horarios || [];
+    } else {
+        cargarDatosPrueba(); // Cargar datos de prueba si no hay datos guardados
+    }
+}
+    </script>
+</body>
+</html>
