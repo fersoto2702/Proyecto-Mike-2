@@ -1026,16 +1026,16 @@
                 <div class="modal-body">
                     <div class="form-group">
                         <label class="form-label">Nombre completo</label>
-                        <input type="text" class="form-control" id="nombreMaestro" required placeholder="Ej: Juan Pérez">
+                        <input type="text" class="form-control" id="nombreMaestro" required placeholder="Ej: Edgar Omar Perez Contreras">
                         <div id="errorMaestro" class="error-message">Este maestro ya existe en el sistema.</div>
                     </div>
                     <div class="form-group">
                         <label class="form-label">Materia que imparte</label>
-                        <input type="text" class="form-control" id="especialidadMaestro" required placeholder="Ej: Matemáticas">
+                        <input type="text" class="form-control" id="especialidadMaestro" required placeholder="Ej: Optativa 1: Redes Neuronales y Lógica Difusa">
                     </div>
                     <div class="form-group">
                         <label class="form-label">Correo electrónico</label>
-                        <input type="email" class="form-control" id="emailMaestro" placeholder="ejemplo@institucion.edu">
+                        <input type="email" class="form-control" id="emailMaestro" placeholder="Edgar_Omar@gmail.com">
                     </div>
                     <div class="form-group">
                         <label class="form-label">Teléfono de contacto</label>
@@ -1150,52 +1150,82 @@
         const maestros = [
             { 
                 id: 1, 
-                nombre: "Juan Pérez", 
-                materias: ["Matemáticas"],
+                nombre: "Edgar Omar Perez Contreras", 
+                materias: ["Optativa 1: Redes Neuronales y Lógica Difusa, Web 1 con Laboratorio"],
                 horario: {
-                    "Lunes": "8:00-10:00 AM",
-                    "Martes": "10:00-12:00 PM", 
-                    "Miércoles": "8:00-10:00 AM",
-                    "Jueves": "10:00-12:00 PM",
-                    "Viernes": "8:00-10:00 AM"
+                    "Lunes": "05:00-06:00 PM",
+                    "Martes": "06:00-07:00 PM", 
+                    "Miércoles":"07:00-08:00 PM",
+                    "Jueves": "08:00-09:00 PM",
+                    "Viernes": "09:00-10:00 PM"
                 },
-                email: "jperez@institucion.edu",
+                email: "Edgar Omar Perez Contreras",
                 telefono: "(555) 123-4567"
             },
             { 
                 id: 2, 
-                nombre: "María López", 
-                materias: ["Historia"],
+                nombre: "José Miguel Mendivil Torres", 
+                materias: ["Innovación de Procesos con NTIC, Sistemas De Información"],
                 horario: {
-                    "Lunes": "2:00-4:00 PM",
-                    "Martes": "2:00-4:00 PM", 
-                    "Miércoles": "2:00-4:00 PM",
-                    "Jueves": "2:00-4:00 PM",
-                    "Viernes": "2:00-4:00 PM"
+                    "Lunes": "05:00-06:00 PM",
+                    "Martes": "06:00-07:00 PM", 
+                    "Miércoles":"07:00-08:00 PM",
+                    "Jueves": "08:00-09:00 PM",
+                    "Viernes": "09:00-10:00 PM"
                 },
-                email: "mlopez@institucion.edu",
+                email: "JoseMiguel@gmail.com",
                 telefono: "(555) 987-6543"
             },
             { 
                 id: 3, 
-                nombre: "Rocío Jaqueline Becerra Urquidez", 
-                materias: ["Sistemas Distribuidos Con Laboratorio"],
+                nombre: "Herman Geovany Inzunza Martínez", 
+                materias: ["Graficación Con Laboratorio, Web 2 con Laboratorio"],
                 horario: {
-                    "Lunes": "4:00-6:00 PM",
-                    "Martes": "4:00-6:00 PM", 
-                    "Miércoles": "4:00-6:00 PM",
-                    "Jueves": "4:00-6:00 PM",
-                    "Viernes": "4:00-6:00 PM"
+                    "Lunes": "05:00-06:00 PM",
+                    "Martes": "06:00-07:00 PM", 
+                    "Miércoles":"07:00-08:00 PM",
+                    "Jueves": "08:00-09:00 PM",
+                    "Viernes": "09:00-10:00 PM"
                 },
-                email: "rbecerra@institucion.edu",
+                email: "HermanGeo@gmail.com",
+                telefono: "(555) 456-7890"
+            },
+            { 
+                id: 4, 
+                nombre: "Mirsa Paolo Inzunza Martinez", 
+                materias: ["Computación Ubicua Con Laboratorio, Sistemas Operativos"],
+                horario: {
+                    "Lunes": "05:00-06:00 PM",
+                    "Martes": "06:00-07:00 PM", 
+                    "Miércoles":"07:00-08:00 PM",
+                    "Jueves": "08:00-09:00 PM",
+                    "Viernes": "09:00-10:00 PM"
+                },
+                email: "MirPao@gmail.com",
+                telefono: "(555) 456-7890"
+            },
+            { 
+                id: 5, 
+                nombre: "Rocio Jaqueline Becerra Urquidez", 
+                materias: ["Sistemas Distribuidos Con Laboratorio, Algoritmos y Lógica Computacional"],  
+                horario: {
+                    "Lunes": "05:00-06:00 PM",
+                    "Martes": "06:00-07:00 PM", 
+                    "Miércoles":"07:00-08:00 PM",
+                    "Jueves": "08:00-09:00 PM",
+                    "Viernes": "09:00-10:00 PM"
+                },
+                email: "RocioJaq@gmail.com",
                 telefono: "(555) 456-7890"
             },
         ];
 
         const materias = [
-            { id: 1, nombre: "Matemáticas", profesores: ["Juan Pérez"], creditos: 4, horas: 5 },
-            { id: 2, nombre: "Historia", profesores: ["María López"], creditos: 3, horas: 4 },
-            { id: 3, nombre: "Sistemas Distribuidos Con Laboratorio", profesores: ["Rocío Jaqueline Becerra Urquidez"], creditos: 5, horas: 6 },
+            { id: 1, nombre: "Optativa 1: Redes Neuronales y Lógica Difusa", profesores: ["Edgar Omar Perez Contreras"], creditos: 4, horas: 5 },
+            { id: 2, nombre: "Innovación de Procesos con NTIC", profesores: ["José Miguel Mendivil Torres"], creditos: 3, horas: 4 },
+            { id: 3, nombre: "Graficación Con Laboratorio", profesores: ["Herman Geovany Inzunza Martínez"], creditos: 5, horas: 6 },
+            { id: 4, nombre: "Computación Ubicua Con Laboratorio", profesores: ["Mirsa Paolo Inzunza Martinez"], creditos: 5, horas: 6 },
+            { id: 5, nombre: "Sistemas Distribuidos Con Laboratorio", profesores: ["Rocio Jaqueline Becerra Urquidez"], creditos: 5, horas: 6 },
         ];
 
         // Función para mostrar notificación
@@ -1464,6 +1494,14 @@ function guardarEdicionMaestro(event) {
             } else {
                 errorElement.style.display = "none";
             }
+
+            // Validar si la materia ya está asignada a este maestro (aunque sea nuevo)
+    if (materiaYaAsignada(nombre, materia)) {
+        errorElement.textContent = "¡Este maestro ya tiene asignada esta materia!";
+        errorElement.style.display = "block";
+        alert("Error: La materia " + materia + " ya está asignada a este maestro.");
+        return;
+    }
             
             // Crear nuevo maestro con horario automático
             let nuevoMaestro = {
@@ -1608,6 +1646,17 @@ function guardarEdicionMaestro(event) {
                 document.getElementById("errorMaestro").style.display = "none";
             }
         }
+
+        function materiaYaAsignada(maestroNombre, materiaNombre) {
+    const maestro = maestros.find(m => m.nombre.toLowerCase() === maestroNombre.toLowerCase());
+    return maestro ? maestro.materias.some(m => m.toLowerCase() === materiaNombre.toLowerCase()) : false;
+}
+
+// Función para verificar si un maestro ya está asignado a una materia
+function maestroYaAsignado(materiaNombre, maestroNombre) {
+    const materia = materias.find(m => m.nombre.toLowerCase() === materiaNombre.toLowerCase());
+    return materia ? materia.profesores.some(p => p.toLowerCase() === maestroNombre.toLowerCase()) : false;
+}
 
         // Cargar datos al iniciar la página
         document.addEventListener("DOMContentLoaded", () => {
