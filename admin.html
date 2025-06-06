@@ -1377,43 +1377,43 @@
         }
 
         // Función para editar un maestro
-function editarMaestro(maestroId, event) {
-    event.stopPropagation();
-    const maestro = maestros.find(m => m.id === maestroId);
-    if (maestro) {
-        // Llenar el modal de edición con los datos del maestro
-        document.getElementById('editNombreMaestro').value = maestro.nombre;
-        document.getElementById('editEspecialidadMaestro').value = maestro.materias.join(', ');
-        document.getElementById('editEmailMaestro').value = maestro.email || '';
-        document.getElementById('editTelefonoMaestro').value = maestro.telefono || '';
-        
-        // Guardar el ID del maestro que se está editando (para usarlo al guardar)
-        document.getElementById('editMaestroForm').dataset.maestroId = maestroId;
-        
-        // Abrir el modal
-        openModal('modalEditarMaestro');
-    }
-}
+        function editarMaestro(maestroId, event) {
+            event.stopPropagation();
+            const maestro = maestros.find(m => m.id === maestroId);
+            if (maestro) {
+                // Llenar el modal de edición con los datos del maestro
+                document.getElementById('editNombreMaestro').value = maestro.nombre;
+                document.getElementById('editEspecialidadMaestro').value = maestro.materias.join(', ');
+                document.getElementById('editEmailMaestro').value = maestro.email || '';
+                document.getElementById('editTelefonoMaestro').value = maestro.telefono || '';
+                
+                // Guardar el ID del maestro que se está editando (para usarlo al guardar)
+                document.getElementById('editMaestroForm').dataset.maestroId = maestroId;
+                
+                // Abrir el modal
+                openModal('modalEditarMaestro');
+            }
+        }
 
-// Función para guardar los cambios (se llamaría al enviar el formulario)
-function guardarEdicionMaestro(event) {
-    event.preventDefault();
-    const maestroId = parseInt(document.getElementById('editMaestroForm').dataset.maestroId);
-    const maestro = maestros.find(m => m.id === maestroId);
-    
-    if (maestro) {
-        // Actualizar datos del maestro
-        maestro.nombre = document.getElementById('editNombreMaestro').value.trim();
-        maestro.materias = document.getElementById('editEspecialidadMaestro').value.trim().split(',');
-        maestro.email = document.getElementById('editEmailMaestro').value.trim() || null;
-        maestro.telefono = document.getElementById('editTelefonoMaestro').value.trim() || null;
-        
-        // Actualizar la vista y cerrar el modal
-        cargarMaestros();
-        closeModal('modalEditarMaestro');
-        showNotification("Maestro actualizado correctamente");
-    }
-}
+        // Función para guardar los cambios (se llamaría al enviar el formulario)
+        function guardarEdicionMaestro(event) {
+            event.preventDefault();
+            const maestroId = parseInt(document.getElementById('editMaestroForm').dataset.maestroId);
+            const maestro = maestros.find(m => m.id === maestroId);
+            
+            if (maestro) {
+                // Actualizar datos del maestro
+                maestro.nombre = document.getElementById('editNombreMaestro').value.trim();
+                maestro.materias = document.getElementById('editEspecialidadMaestro').value.trim().split(',');
+                maestro.email = document.getElementById('editEmailMaestro').value.trim() || null;
+                maestro.telefono = document.getElementById('editTelefonoMaestro').value.trim() || null;
+                
+                // Actualizar la vista y cerrar el modal
+                cargarMaestros();
+                closeModal('modalEditarMaestro');
+                showNotification("Maestro actualizado correctamente");
+            }
+        }
 
         // Cargar materias en la tabla
         function cargarMaterias() {
@@ -1496,12 +1496,12 @@ function guardarEdicionMaestro(event) {
             }
 
             // Validar si la materia ya está asignada a este maestro (aunque sea nuevo)
-    if (materiaYaAsignada(nombre, materia)) {
-        errorElement.textContent = "¡Este maestro ya tiene asignada esta materia!";
-        errorElement.style.display = "block";
-        alert("Error: La materia " + materia + " ya está asignada a este maestro.");
-        return;
-    }
+            if (materiaYaAsignada(nombre, materia)) {
+                errorElement.textContent = "¡Este maestro ya tiene asignada esta materia!";
+                errorElement.style.display = "block";
+                alert("Error: La materia " + materia + " ya está asignada a este maestro.");
+                return;
+            }
             
             // Crear nuevo maestro con horario automático
             let nuevoMaestro = {
@@ -1593,15 +1593,26 @@ function guardarEdicionMaestro(event) {
             showNotification("Materia agregada correctamente");
         }
 
+        // *** NAVEGACIÓN CORREGIDA ***
         // Cambiar entre pestañas
         document.querySelectorAll(".sidebar-nav-link").forEach(link => {
             link.addEventListener("click", function (e) {
-                e.preventDefault();
-
-                // Evitar procesar si es un enlace externo
-                if (this.getAttribute("href") === "index.html") {
+                const href = this.getAttribute("href");
+                const dataTab = this.getAttribute("data-tab");
+                
+                // Si el enlace tiene href pero no data-tab, es un enlace externo
+                if (href && !dataTab) {
+                    // Permitir navegación normal para enlaces externos (como index.html)
                     return true;
                 }
+                
+                // Si no tiene data-tab, no hacer nada
+                if (!dataTab) {
+                    return;
+                }
+                
+                // Prevenir evento solo para enlaces internos (pestañas)
+                e.preventDefault();
 
                 // Remover la clase "active" de todos los enlaces
                 document.querySelectorAll(".sidebar-nav-link").forEach(item => item.classList.remove("active"));
@@ -1614,14 +1625,13 @@ function guardarEdicionMaestro(event) {
                 });
 
                 // Mostrar el contenido de la pestaña seleccionada
-                let tab = this.getAttribute("data-tab");
-                if (tab && document.getElementById(tab)) {
-                    document.getElementById(tab).classList.add("active");
+                if (document.getElementById(dataTab)) {
+                    document.getElementById(dataTab).classList.add("active");
 
                     // Cargar datos si es necesario
-                    if (tab === "maestros") {
+                    if (dataTab === "maestros") {
                         cargarMaestros();
-                    } else if (tab === "materias") {
+                    } else if (dataTab === "materias") {
                         cargarMaterias();
                     }
                 }
@@ -1648,15 +1658,15 @@ function guardarEdicionMaestro(event) {
         }
 
         function materiaYaAsignada(maestroNombre, materiaNombre) {
-    const maestro = maestros.find(m => m.nombre.toLowerCase() === maestroNombre.toLowerCase());
-    return maestro ? maestro.materias.some(m => m.toLowerCase() === materiaNombre.toLowerCase()) : false;
-}
+            const maestro = maestros.find(m => m.nombre.toLowerCase() === maestroNombre.toLowerCase());
+            return maestro ? maestro.materias.some(m => m.toLowerCase() === materiaNombre.toLowerCase()) : false;
+        }
 
-// Función para verificar si un maestro ya está asignado a una materia
-function maestroYaAsignado(materiaNombre, maestroNombre) {
-    const materia = materias.find(m => m.nombre.toLowerCase() === materiaNombre.toLowerCase());
-    return materia ? materia.profesores.some(p => p.toLowerCase() === maestroNombre.toLowerCase()) : false;
-}
+        // Función para verificar si un maestro ya está asignado a una materia
+        function maestroYaAsignado(materiaNombre, maestroNombre) {
+            const materia = materias.find(m => m.nombre.toLowerCase() === materiaNombre.toLowerCase());
+            return materia ? materia.profesores.some(p => p.toLowerCase() === maestroNombre.toLowerCase()) : false;
+        }
 
         // Cargar datos al iniciar la página
         document.addEventListener("DOMContentLoaded", () => {
@@ -1664,6 +1674,6 @@ function maestroYaAsignado(materiaNombre, maestroNombre) {
             cargarMaterias();
             cargarOpcionesProfesores();
         });
-    </script>
+</script>
 </body>
 </html>
